@@ -1,0 +1,112 @@
+@baseUrl = http://localhost:3000/api
+
+### 1. Health Check
+GET http://localhost:3000/
+Accept: application/json
+
+### 2. Register User (User Role)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Keqing",
+  "email": "keqing@gachamerch.com",
+  "password": "password123"
+}
+
+### 3. Login User (Obtain 20-character custom token)
+# @name userLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@gachamerch.com",
+  "password": "password123"
+}
+
+### 4. Login Admin (Obtain 20-character custom token)
+# @name adminLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@gachamerch.com",
+  "password": "password123"
+}
+
+### 5. Get Weapons Catalog (Public - no token needed)
+GET {{baseUrl}}/weapons
+Accept: application/json
+
+### 6. Admin Create Weapon (Admin Token required - replace token after login)
+# @name createWeapon
+POST {{baseUrl}}/weapons
+Authorization: Bearer INSERT_ADMIN_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "name": "Staff of Homa",
+  "type": "Polearm",
+  "description": "A fire-wood staff that was once used in ancient rituals. Possesses legendary power to banish evil spirits.",
+  "stock": 5,
+  "image": "staff_of_homa.png",
+  "price": 1600000.00
+}
+
+### 7. Get Specific Weapon (User Token required - replace token and weapon id)
+GET {{baseUrl}}/weapons/INSERT_WEAPON_ID_HERE
+Authorization: Bearer INSERT_USER_TOKEN_HERE
+Accept: application/json
+
+### 8. Admin Update Weapon Stock/Price (Admin Token required - replace token and weapon id)
+PUT {{baseUrl}}/weapons/INSERT_WEAPON_ID_HERE
+Authorization: Bearer INSERT_ADMIN_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "name": "Staff of Homa (Ascended)",
+  "type": "Polearm",
+  "description": "An upgraded fire-wood staff. Its flame burns brighter than ever.",
+  "stock": 4,
+  "image": "staff_of_homa_ascended.png",
+  "price": 1800000.00
+}
+
+### 9. User Purchases Weapon - Success Case (User Token required - replace token and weapon id)
+POST {{baseUrl}}/transactions
+Authorization: Bearer INSERT_USER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "weapon_id": "INSERT_WEAPON_ID_HERE",
+  "quantity": 2
+}
+
+### 10. User Purchase Fails - Exceeds Stock Case (User Token required - replace token and weapon id, expected 422)
+POST {{baseUrl}}/transactions
+Authorization: Bearer INSERT_USER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "weapon_id": "INSERT_WEAPON_ID_HERE",
+  "quantity": 5
+}
+
+### 11. View User Transaction History (User Token required - replace token)
+GET {{baseUrl}}/transactions/history
+Authorization: Bearer INSERT_USER_TOKEN_HERE
+Accept: application/json
+
+### 12. Admin Soft Delete Weapon (Admin Token required - replace token and weapon id)
+DELETE {{baseUrl}}/weapons/INSERT_WEAPON_ID_HERE
+Authorization: Bearer INSERT_ADMIN_TOKEN_HERE
+Accept: application/json
+
+### 13. Verify soft deleted weapon is excluded from Catalog
+GET {{baseUrl}}/weapons
+Accept: application/json
+
+### 14. Logout User (User Token required - replace token)
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer INSERT_USER_TOKEN_HERE
+Content-Type: application/json

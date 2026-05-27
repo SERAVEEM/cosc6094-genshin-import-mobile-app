@@ -1,0 +1,21 @@
+{
+  "name": "genshin-import-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Genshin Import (Mobile Hybrid Solution)",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "db:init": "node database/init_db.js",
+    "test": "node tests/integration.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.9.7",
+    "uuid": "^9.0.1"
+  }
+}
