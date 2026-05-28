@@ -4,17 +4,23 @@ import 'package:google_fonts/google_fonts.dart';
 
 class GetButton extends StatelessWidget {
   final VoidCallback? onTap;
+  final double width;
+  final double height;
+  final double fontSize;
 
   const GetButton({
     super.key,
     this.onTap,
+    this.width = 54,
+    this.height = 20,
+    this.fontSize = 10,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Detail specifications:
-    // 1. Font -> Plus Jakarta Sans, Bold, Size: 8, Color: #f8f8f8f8
-    // 2. Box Size -> 42x16, Fill: #656565 20%
+    // Detail specifications (defaults are slightly larger):
+    // 1. Font -> Plus Jakarta Sans, Bold, Size: default 10, Color: #f8f8f8f8
+    // 2. Box Size -> default 54x20, Fill: #656565 20%
     // 3. Box Effect -> Refraction 80, Depth 20, Dispersion 50, Frost 4, Splay 0
     //
     // Translation of effects to Flutter:
@@ -30,8 +36,8 @@ class GetButton extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0), // Frost: 4
         child: Container(
-          width: 42,
-          height: 16,
+          width: width,
+          height: height,
           decoration: BoxDecoration(
             color: const Color(0xff656565).withOpacity(0.20), // Fill: #656565 20%
             borderRadius: BorderRadius.circular(24),
@@ -52,7 +58,7 @@ class GetButton extends StatelessWidget {
           child: Text(
             'GET',
             style: GoogleFonts.plusJakartaSans(
-              fontSize: 8,
+              fontSize: fontSize,
               fontWeight: FontWeight.bold,
               color: const Color(0xf8f8f8f8), // Font Color: #f8f8f8f8
               height: 1.0,
