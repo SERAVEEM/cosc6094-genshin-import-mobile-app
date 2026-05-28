@@ -31,38 +31,40 @@ class GetButton extends StatelessWidget {
     // - Dispersion: 50 -> Blur radius of the shadows / light-bleed
     // - Splay: 0 -> Spread radius of 0
     
-    final Widget buttonBody = ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0), // Frost: 4
-        child: Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            color: const Color(0xff656565).withOpacity(0.20), // Fill: #656565 20%
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.80), // Refraction: 80 (80% opacity)
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.20), // Depth: 20 (20% opacity shadow)
-                blurRadius: 5.0, // Dispersion: 50 (blur radius 5.0)
-                spreadRadius: 0.0, // Splay: 0
-                offset: const Offset(0, 1.5), // Depth offset
-              ),
-            ],
+    final Widget buttonBody = Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.80), // Refraction: 80
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.20), // Depth: 20
+            blurRadius: 5.0, // Dispersion: 50
+            spreadRadius: 0.0, // Splay: 0
+            offset: const Offset(0, 1.5),
           ),
-          alignment: Alignment.center,
-          child: Text(
-            'Get',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xf8f8f8f8), // Font Color: #f8f8f8f8
-              height: 1.0,
-              letterSpacing: 0,
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0), // Frost: 4
+          child: Container(
+            color: const Color(0xff656565).withOpacity(0.20), // Fill: #656565 20%
+            alignment: Alignment.center,
+            child: Text(
+              'Get',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xf8f8f8f8), // Font Color: #f8f8f8f8
+                height: 1.0,
+                letterSpacing: 0,
+              ),
             ),
           ),
         ),

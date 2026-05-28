@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../config/theme.dart';
 import '../../../models/weapon.dart';
 import '../../shared/get_button.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TrendingItemTile extends StatelessWidget {
   final Weapon weapon;
@@ -57,9 +58,9 @@ class TrendingItemTile extends StatelessWidget {
                 children: [
                   Text(
                     weapon.name,
-                    style: const TextStyle(
+                    style: GoogleFonts.plusJakartaSans(
                       color: AppTheme.textPrimary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       fontSize: 16,
                     ),
                   ),
@@ -68,9 +69,10 @@ class TrendingItemTile extends StatelessWidget {
                     weapon.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppTheme.textMuted,
-                      fontSize: 12,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xffd9d9d9).withOpacity(0.85),
+                      fontSize: 10,
                     ),
                   ),
                 ],
@@ -80,25 +82,31 @@ class TrendingItemTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const GetButton(),
+                const Padding(
+                  padding: EdgeInsets.only(right: 0), // <-- Adjust left/right margins here
+                  child: GetButton(),
+                ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Image.asset(
-                      'asset/Icon/Primo icons.png',
-                      width: 16,
-                      height: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      weapon.price.toStringAsFixed(0),
-                      style: const TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0), // <-- Adjust margins for the whole price row here
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'asset/Icon/Primo icons.png',
+                        width: 16, // <-- Primo Icon Width
+                        height: 16, // <-- Primo Icon Height
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 4), // <-- Spacing between icon and price text
+                      Text(
+                        weapon.price.toStringAsFixed(0),
+                        style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14, // <-- Price font size
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
