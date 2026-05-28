@@ -10,7 +10,7 @@ class WeaponService {
       'type': 'Sword',
       'description': 'The Ultimate last slash. A sword that crackles with a fierce violet light.',
       'stock': 5,
-      'image': 'assets/Product/Missplitter reforged.png',
+      'image': 'assets/Home/download 1.png',
       'price': 500.0,
     },
     {
@@ -64,9 +64,9 @@ class WeaponService {
     await Future.delayed(const Duration(milliseconds: 400));
     final prefs = await SharedPreferences.getInstance();
     
-    final weaponsStr = prefs.getString('mock_weapons_v2');
+    final weaponsStr = prefs.getString('mock_weapons_v3');
     if (weaponsStr == null) {
-      await prefs.setString('mock_weapons_v2', jsonEncode(_defaultWeapons));
+      await prefs.setString('mock_weapons_v3', jsonEncode(_defaultWeapons));
       return _defaultWeapons.map((item) => Weapon.fromJson(item)).toList();
     }
     
@@ -94,12 +94,12 @@ class WeaponService {
       'type': weaponData['type'] ?? 'Sword',
       'description': weaponData['description'] ?? '',
       'stock': weaponData['stock'] is int ? weaponData['stock'] : int.parse(weaponData['stock']?.toString() ?? '0'),
-      'image': weaponData['image'] ?? 'assets/Product/Missplitter reforged.png',
+      'image': weaponData['image'] ?? 'assets/Home/download 1.png',
       'price': weaponData['price'] is double ? weaponData['price'] : double.parse(weaponData['price']?.toString() ?? '0.0'),
     };
 
     final updatedCatalog = catalog.map((w) => w.toJson()).toList()..add(newWeaponMap);
-    await prefs.setString('mock_weapons_v2', jsonEncode(updatedCatalog));
+    await prefs.setString('mock_weapons_v3', jsonEncode(updatedCatalog));
 
     return Weapon.fromJson(newWeaponMap);
   }
@@ -126,7 +126,7 @@ class WeaponService {
 
     final updatedList = catalog.map((w) => w.toJson()).toList();
     updatedList[index] = updatedWeaponMap;
-    await prefs.setString('mock_weapons_v2', jsonEncode(updatedList));
+    await prefs.setString('mock_weapons_v3', jsonEncode(updatedList));
 
     return Weapon.fromJson(updatedWeaponMap);
   }
@@ -137,6 +137,6 @@ class WeaponService {
     final catalog = await getCatalog();
 
     final updatedList = catalog.where((w) => w.id != id).map((w) => w.toJson()).toList();
-    await prefs.setString('mock_weapons_v2', jsonEncode(updatedList));
+    await prefs.setString('mock_weapons_v3', jsonEncode(updatedList));
   }
 }
