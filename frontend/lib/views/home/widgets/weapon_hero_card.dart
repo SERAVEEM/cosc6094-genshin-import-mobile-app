@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../config/theme.dart';
 import '../../../models/weapon.dart';
+import '../../shared/get_button.dart';
 
 class WeaponHeroCard extends StatelessWidget {
   final Weapon weapon;
@@ -22,14 +23,9 @@ class WeaponHeroCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
           color: AppTheme.cardBg,
-          image: DecorationImage(
-            image: (weapon.image.startsWith('http')
-                ? NetworkImage(weapon.image)
-                : AssetImage(weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}')) as ImageProvider,
+          image: const DecorationImage(
+            image: AssetImage('assets/Product/Top items.png'),
             fit: BoxFit.cover,
-            onError: (err, stack) {
-              // fallback handled by Stack containing fallback gradients
-            },
           ),
         ),
         child: ClipRRect(
@@ -81,27 +77,7 @@ class WeaponHeroCard extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppTheme.space4,
-                                  vertical: AppTheme.space2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.25),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Get',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
+                              const GetButton(),
                               const SizedBox(height: AppTheme.space1),
                               Row(
                                 children: [
