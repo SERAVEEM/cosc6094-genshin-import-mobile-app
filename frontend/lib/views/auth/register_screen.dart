@@ -75,44 +75,97 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required String hintText,
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+    Widget? suffixIcon,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xff22252D).withOpacity(0.8), // Dark capsule fill
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            validator: validator,
+            textAlign: TextAlign.center, // Centered text inside the input
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 13),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              suffixIcon: suffixIcon,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none,
+              ),
+              errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 11),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _socialButton({
     required String label,
     required String letter,
     required VoidCallback onPressed,
   }) {
-    return Material(
-      color: const Color(0xff1C2436),
-      borderRadius: BorderRadius.circular(30),
-      child: InkWell(
-        onTap: onPressed,
+    return Container(
+      width: 140, // compact size
+      decoration: BoxDecoration(
+        color: const Color(0xff22252D).withOpacity(0.8), // matching capsule fill
         borderRadius: BorderRadius.circular(30),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: const Color(0x22ffffff), width: 1),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                letter,
-                style: const TextStyle(
-                  color: Color(0xffFF6B6B), // Premium pinkish-red accent letter
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(30),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  letter,
+                  style: const TextStyle(
+                    color: Color(0xffFF6B6B), // pink accent
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
-              ),
-              const SizedBox(width: AppTheme.space2),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                const SizedBox(width: 10),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -163,12 +216,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 220), // Height spacer for the banner image
                   
                   ClipPath(
-                    clipper: TiltedClipper(),
+                    clipper: CurveClipper(), // Wave curve clipper
                     child: Container(
                       width: double.infinity,
                       color: Colors.black,
                       padding: const EdgeInsets.only(
-                        top: 60, // Spacing to avoid title overlapping the tilt
+                        top: 60, // Spacing to avoid title overlapping the curve
                         left: AppTheme.space6,
                         right: AppTheme.space6,
                         bottom: AppTheme.space8,
@@ -176,7 +229,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Form(
                         key: _formKey,
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             const Center(
                               child: Text(
@@ -191,37 +244,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: AppTheme.space8),
                             
-                            // Name Field Label
-                            const Text(
-                              'Name',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: AppTheme.space2),
-                            
                             // Name Input
-                            TextFormField(
+                            _buildInputField(
                               controller: _nameController,
+                              label: 'Name',
+                              hintText: 'Enter your name',
                               keyboardType: TextInputType.name,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                fillColor: const Color(0xff1C2436),
-                                filled: true,
-                                hintText: 'Enter your name',
-                                hintStyle: const TextStyle(color: AppTheme.textMuted),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: AppTheme.space6,
-                                  vertical: 16,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  borderSide: BorderSide.none,
-                                ),
-                                errorStyle: const TextStyle(color: Colors.redAccent),
-                              ),
                               validator: (val) {
                                 if (val == null || val.trim().isEmpty) {
                                   return 'Name cannot be empty!';
@@ -231,37 +259,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: AppTheme.space4),
                             
-                            // Email Field Label
-                            const Text(
-                              'Email',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: AppTheme.space2),
-                            
                             // Email Input
-                            TextFormField(
+                            _buildInputField(
                               controller: _emailController,
+                              label: 'Email',
+                              hintText: 'Enter your email',
                               keyboardType: TextInputType.emailAddress,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                fillColor: const Color(0xff1C2436),
-                                filled: true,
-                                hintText: 'email@example.com',
-                                hintStyle: const TextStyle(color: AppTheme.textMuted),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: AppTheme.space6,
-                                  vertical: 16,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  borderSide: BorderSide.none,
-                                ),
-                                errorStyle: const TextStyle(color: Colors.redAccent),
-                              ),
                               validator: (val) {
                                 if (val == null || val.isEmpty || !val.contains('@')) {
                                   return 'Format email tidak valid!';
@@ -271,47 +274,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: AppTheme.space4),
                             
-                            // Password Field Label
-                            const Text(
-                              'Password',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: AppTheme.space2),
-                            
                             // Password Input
-                            TextFormField(
+                            _buildInputField(
                               controller: _passwordController,
+                              label: 'Password',
+                              hintText: 'Enter your password',
                               obscureText: _obscurePassword,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                fillColor: const Color(0xff1C2436),
-                                filled: true,
-                                hintText: '••••••••',
-                                hintStyle: const TextStyle(color: AppTheme.textMuted),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: AppTheme.space6,
-                                  vertical: 16,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                  color: AppTheme.textMuted,
                                 ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                    color: AppTheme.textMuted,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscurePassword = !_obscurePassword;
-                                    });
-                                  },
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  borderSide: BorderSide.none,
-                                ),
-                                errorStyle: const TextStyle(color: Colors.redAccent),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
                               ),
                               validator: (val) {
                                 if (val == null || val.length < 6) {
@@ -322,47 +300,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: AppTheme.space4),
                             
-                            // Confirm Password Field Label
-                            const Text(
-                              'Confirm Password',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: AppTheme.space2),
-                            
                             // Confirm Password Input
-                            TextFormField(
+                            _buildInputField(
                               controller: _confirmPasswordController,
+                              label: 'Confirm Password',
+                              hintText: 'Confirm your password',
                               obscureText: _obscureConfirmPassword,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                fillColor: const Color(0xff1C2436),
-                                filled: true,
-                                hintText: '••••••••',
-                                hintStyle: const TextStyle(color: AppTheme.textMuted),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: AppTheme.space6,
-                                  vertical: 16,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                  color: AppTheme.textMuted,
                                 ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                    color: AppTheme.textMuted,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscureConfirmPassword = !_obscureConfirmPassword;
-                                    });
-                                  },
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  borderSide: BorderSide.none,
-                                ),
-                                errorStyle: const TextStyle(color: Colors.redAccent),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureConfirmPassword = !_obscureConfirmPassword;
+                                  });
+                                },
                               ),
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
@@ -404,48 +357,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                     ),
                                   ),
-                            const SizedBox(height: AppTheme.space6),
+                            const SizedBox(height: AppTheme.space8),
                             
-                            // Social Divider
+                            // Social buttons Row (Centered side-by-side)
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Expanded(
-                                  child: Divider(color: Color(0x22ffffff)),
+                                _socialButton(
+                                  label: 'Google',
+                                  letter: 'G',
+                                  onPressed: () => _registerMockSocial('google'),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: AppTheme.space3),
-                                  child: Text(
-                                    'or register with',
-                                    style: TextStyle(
-                                      color: AppTheme.textMuted.withOpacity(0.6),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                                const Expanded(
-                                  child: Divider(color: Color(0x22ffffff)),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: AppTheme.space4),
-                            
-                            // Social buttons Row
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _socialButton(
-                                    label: 'Google',
-                                    letter: 'G',
-                                    onPressed: () => _registerMockSocial('google'),
-                                  ),
-                                ),
-                                const SizedBox(width: AppTheme.space4),
-                                Expanded(
-                                  child: _socialButton(
-                                    label: 'HoyoVerse',
-                                    letter: 'H',
-                                    onPressed: () => _registerMockSocial('hoyoverse'),
-                                  ),
+                                const SizedBox(width: 16),
+                                _socialButton(
+                                  label: 'HoyoVerse',
+                                  letter: 'H',
+                                  onPressed: () => _registerMockSocial('hoyoverse'),
                                 ),
                               ],
                             ),
@@ -476,20 +403,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-class TiltedClipper extends CustomClipper<Path> {
+class CurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    // Start on the left, slightly lower (down at y=40)
-    path.moveTo(0, 40);
-    // Draw a smooth bezier curve to the top-right corner (width, 0)
+    path.moveTo(0, 50);
+    // Draw curve from left to right: dips down in the middle-left, goes up on the right
     path.quadraticBezierTo(
-      size.width * 0.5,
-      20,
+      size.width * 0.4,
+      100, // Dips down further
       size.width,
-      0,
+      40,  // Goes back up
     );
-    // Draw lines to form the rest of the closed box
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();

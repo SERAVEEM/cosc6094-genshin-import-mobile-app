@@ -11,9 +11,9 @@ class GetButton extends StatelessWidget {
   const GetButton({
     super.key,
     this.onTap,
-    this.width = 54,
-    this.height = 20,
-    this.fontSize = 10,
+    this.width = 64,
+    this.height = 28,
+    this.fontSize = 14,
   });
 
   @override
@@ -43,7 +43,7 @@ class GetButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: Colors.white.withOpacity(0.80), // Refraction: 80 (80% opacity)
-              width: 0.7,
+              width: 1,
             ),
             boxShadow: [
               BoxShadow(
@@ -56,13 +56,13 @@ class GetButton extends StatelessWidget {
           ),
           alignment: Alignment.center,
           child: Text(
-            'GET',
+            'Get',
             style: GoogleFonts.plusJakartaSans(
               fontSize: fontSize,
               fontWeight: FontWeight.bold,
               color: const Color(0xf8f8f8f8), // Font Color: #f8f8f8f8
               height: 1.0,
-              letterSpacing: 0.4,
+              letterSpacing: 0,
             ),
           ),
         ),

@@ -6,7 +6,7 @@ class WeaponService {
   static final List<Map<String, dynamic>> _defaultWeapons = [
     {
       'id': 'w1000001',
-      'name': 'Missplitter Regforged',
+      'name': 'Mistsplitter Reforged',
       'type': 'Sword',
       'description': 'The Ultimate last slash. A sword that crackles with a fierce violet light.',
       'stock': 5,
@@ -64,9 +64,9 @@ class WeaponService {
     await Future.delayed(const Duration(milliseconds: 400));
     final prefs = await SharedPreferences.getInstance();
     
-    final weaponsStr = prefs.getString('mock_weapons_v3');
+    final weaponsStr = prefs.getString('mock_weapons_v4');
     if (weaponsStr == null) {
-      await prefs.setString('mock_weapons_v3', jsonEncode(_defaultWeapons));
+      await prefs.setString('mock_weapons_v4', jsonEncode(_defaultWeapons));
       return _defaultWeapons.map((item) => Weapon.fromJson(item)).toList();
     }
     
@@ -99,7 +99,7 @@ class WeaponService {
     };
 
     final updatedCatalog = catalog.map((w) => w.toJson()).toList()..add(newWeaponMap);
-    await prefs.setString('mock_weapons_v3', jsonEncode(updatedCatalog));
+    await prefs.setString('mock_weapons_v4', jsonEncode(updatedCatalog));
 
     return Weapon.fromJson(newWeaponMap);
   }
@@ -126,7 +126,7 @@ class WeaponService {
 
     final updatedList = catalog.map((w) => w.toJson()).toList();
     updatedList[index] = updatedWeaponMap;
-    await prefs.setString('mock_weapons_v3', jsonEncode(updatedList));
+    await prefs.setString('mock_weapons_v4', jsonEncode(updatedList));
 
     return Weapon.fromJson(updatedWeaponMap);
   }
@@ -137,6 +137,6 @@ class WeaponService {
     final catalog = await getCatalog();
 
     final updatedList = catalog.where((w) => w.id != id).map((w) => w.toJson()).toList();
-    await prefs.setString('mock_weapons_v3', jsonEncode(updatedList));
+    await prefs.setString('mock_weapons_v4', jsonEncode(updatedList));
   }
 }

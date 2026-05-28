@@ -18,7 +18,7 @@ class TrendingItemTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: AppTheme.space4),
+        margin: const EdgeInsets.only(bottom: AppTheme.space3),
         padding: const EdgeInsets.symmetric(vertical: AppTheme.space2),
         child: Row(
           children: [
@@ -81,13 +81,13 @@ class TrendingItemTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 const GetButton(),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Image.asset(
                       'asset/Icon/Primo icons.png',
-                      width: 14,
-                      height: 14,
+                      width: 16,
+                      height: 16,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -95,7 +95,7 @@ class TrendingItemTile extends StatelessWidget {
                       style: const TextStyle(
                         color: AppTheme.textPrimary,
                         fontWeight: FontWeight.bold,
-                        fontSize: 13,
+                        fontSize: 14,
                       ),
                     ),
                   ],

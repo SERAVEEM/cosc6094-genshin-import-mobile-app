@@ -39,7 +39,7 @@ class WeaponHeroCard extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.85),
+                      Colors.black.withOpacity(0.15),
                     ],
                   ),
                 ),
@@ -48,60 +48,101 @@ class WeaponHeroCard extends StatelessWidget {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                child: ClipRect(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      padding: const EdgeInsets.all(AppTheme.space4),
-                      color: Colors.black.withOpacity(0.35),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  weapon.name,
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    height: 1.2,
-                                  ),
-                                ),
-                              ],
-                            ),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                  child: Stack(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppTheme.space6,
+                          vertical: AppTheme.space4,
+                        ),
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            topRight: Radius.circular(24),
                           ),
-                          const SizedBox(width: AppTheme.space2),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const GetButton(),
-                              const SizedBox(height: AppTheme.space1),
-                              Row(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Color(0x00d9d9d9), // 0% #d9d9d9 0% opacity
+                              Color(0x4d000000), // 100% #000000 30% opacity
+                            ],
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Image.asset(
-                                    'asset/Icon/Primo icons.png',
-                                    width: 16,
-                                    height: 16,
-                                  ),
-                                  const SizedBox(width: 4),
                                   Text(
-                                    weapon.price.toStringAsFixed(0),
+                                    weapon.name.replaceFirst(' ', '\n'),
                                     style: const TextStyle(
-                                      color: Colors.white,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      color: Colors.white,
+                                      height: 1.2,
                                     ),
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                            const SizedBox(width: AppTheme.space2),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                const GetButton(),
+                                const SizedBox(height: AppTheme.space1),
+                                Row(
+                                  children: [
+                                    Image.asset(
+                                      'asset/Icon/Primo icons.png',
+                                      width: 16,
+                                      height: 16,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      weapon.price.toStringAsFixed(0),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: 8,
+                        child: IgnorePointer(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withOpacity(0.25),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
