@@ -31,19 +31,19 @@ class AppTheme {
         secondary: accent,
         surface: cardBg,
       ),
-      textTheme: GoogleFonts.montserratTextTheme(
+      textTheme: GoogleFonts.plusJakartaSansTextTheme(
         ThemeData.dark().textTheme,
       ).copyWith(
-        titleLarge: GoogleFonts.montserrat(
+        titleLarge: GoogleFonts.plusJakartaSans(
           color: textPrimary,
           fontWeight: FontWeight.bold,
           fontSize: 24,
         ),
-        bodyLarge: GoogleFonts.montserrat(
+        bodyLarge: GoogleFonts.plusJakartaSans(
           color: textPrimary,
           fontSize: 16,
         ),
-        bodyMedium: GoogleFonts.montserrat(
+        bodyMedium: GoogleFonts.plusJakartaSans(
           color: textMuted,
           fontSize: 14,
         ),

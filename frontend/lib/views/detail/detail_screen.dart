@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/weapon.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/weapon_provider.dart';
 import '../../providers/transaction_provider.dart';
 import '../shared/error_dialog.dart';
+import '../auth/login_screen.dart';
 
 class WeaponDetailScreen extends StatefulWidget {
   final String weaponId;
@@ -39,6 +41,17 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
   }
 
   Future<void> _buy(Weapon weapon) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (!authProvider.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to purchase items.')),
+      );
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+      return;
+    }
+
     setState(() {
       _isPurchasing = true;
     });
@@ -105,9 +118,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.cardBg,
                 image: DecorationImage(
-                  image: weapon.image.startsWith('http')
+                  image: (weapon.image.startsWith('http')
                       ? NetworkImage(weapon.image)
-                      : AssetImage('assets/images/${weapon.image}') as ImageProvider,
+                      : AssetImage(weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}')) as ImageProvider,
                   fit: BoxFit.cover,
                   onError: (err, stack) {},
                 ),
@@ -217,10 +230,10 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Icon(
-                                Icons.diamond_rounded,
-                                color: Colors.lightBlueAccent,
-                                size: 20,
+                              Image.asset(
+                                'asset/Icon/Primo icons.png',
+                                width: 20,
+                                height: 20,
                               ),
                               const SizedBox(width: 6),
                               Text(

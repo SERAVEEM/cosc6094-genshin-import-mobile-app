@@ -5,7 +5,7 @@ class CategoryChip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
-  final IconData icon;
+  final dynamic icon;
 
   const CategoryChip({
     super.key,
@@ -36,11 +36,18 @@ class CategoryChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected ? Colors.black : AppTheme.textPrimary,
-            ),
+            icon is IconData
+                ? Icon(
+                    icon as IconData,
+                    size: 16,
+                    color: isSelected ? Colors.black : AppTheme.textPrimary,
+                  )
+                : Image.asset(
+                    icon as String,
+                    width: 16,
+                    height: 16,
+                    color: isSelected ? Colors.black : AppTheme.textPrimary,
+                  ),
             const SizedBox(width: AppTheme.space2),
             Text(
               label,

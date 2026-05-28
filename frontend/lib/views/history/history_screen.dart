@@ -78,9 +78,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               borderRadius: BorderRadius.circular(12),
                               image: tx.weaponImage != null
                                   ? DecorationImage(
-                                      image: tx.weaponImage!.startsWith('http')
+                                      image: (tx.weaponImage!.startsWith('http')
                                           ? NetworkImage(tx.weaponImage!)
-                                          : AssetImage('assets/images/${tx.weaponImage!}') as ImageProvider,
+                                          : AssetImage(tx.weaponImage!.startsWith('assets/') ? tx.weaponImage! : 'assets/images/${tx.weaponImage!}')) as ImageProvider,
                                       fit: BoxFit.cover,
                                       onError: (err, stack) {},
                                     )
@@ -120,10 +120,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
-                                    Icons.diamond_rounded,
-                                    color: Colors.lightBlueAccent,
-                                    size: 14,
+                                  Image.asset(
+                                    'asset/Icon/Primo icons.png',
+                                    width: 14,
+                                    height: 14,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(

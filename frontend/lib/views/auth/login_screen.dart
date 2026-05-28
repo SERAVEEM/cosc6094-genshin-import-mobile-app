@@ -23,6 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     try {
       await authProvider.login(_emailController.text.trim(), _passwordController.text.trim());
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
     } catch (e) {
       if (mounted) {
         ErrorDialog.show(context, e.toString().replaceAll('Exception: ', ''));
@@ -38,6 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
         'Google Traveler',
         'oauth_google_123456789',
       );
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
     } catch (e) {
       if (mounted) {
         ErrorDialog.show(context, e.toString().replaceAll('Exception: ', ''));
@@ -50,6 +56,16 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     
     return Scaffold(
+      appBar: Navigator.canPop(context)
+          ? AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.close, color: AppTheme.textPrimary),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            )
+          : null,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppTheme.space6),

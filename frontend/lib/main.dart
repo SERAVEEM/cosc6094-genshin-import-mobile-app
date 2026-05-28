@@ -4,7 +4,6 @@ import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/weapon_provider.dart';
 import 'providers/transaction_provider.dart';
-import 'views/auth/login_screen.dart';
 import 'views/home/home_screen.dart';
 
 void main() {
@@ -27,18 +26,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
         themeMode: ThemeMode.dark,
-        home: Consumer<AuthProvider>(
-          builder: (context, auth, _) {
-            if (auth.isChecking) {
-              return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(color: AppTheme.accent),
-                ),
-              );
-            }
-            return auth.isAuthenticated ? const HomeScreen() : const LoginScreen();
-          },
-        ),
+        home: const HomeScreen(),
       ),
     );
   }

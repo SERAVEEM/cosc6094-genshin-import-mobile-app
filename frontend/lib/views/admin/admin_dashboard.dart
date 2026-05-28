@@ -58,9 +58,9 @@ class AdminDashboard extends StatelessWidget {
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(12),
                               image: DecorationImage(
-                                image: weapon.image.startsWith('http')
+                                image: (weapon.image.startsWith('http')
                                     ? NetworkImage(weapon.image)
-                                    : AssetImage('assets/images/${weapon.image}') as ImageProvider,
+                                    : AssetImage(weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}')) as ImageProvider,
                                 fit: BoxFit.cover,
                                 onError: (err, stack) {},
                               ),

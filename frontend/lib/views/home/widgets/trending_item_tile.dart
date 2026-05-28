@@ -28,9 +28,9 @@ class TrendingItemTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 color: AppTheme.cardBg,
                 image: DecorationImage(
-                  image: weapon.image.startsWith('http')
+                  image: (weapon.image.startsWith('http')
                       ? NetworkImage(weapon.image)
-                      : AssetImage('assets/images/${weapon.image}') as ImageProvider,
+                      : AssetImage(weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}')) as ImageProvider,
                   fit: BoxFit.cover,
                   onError: (err, stack) {},
                 ),
@@ -100,10 +100,10 @@ class TrendingItemTile extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(
-                      Icons.diamond_rounded,
-                      color: Colors.lightBlueAccent,
-                      size: 14,
+                    Image.asset(
+                      'asset/Icon/Primo icons.png',
+                      width: 14,
+                      height: 14,
                     ),
                     const SizedBox(width: 4),
                     Text(

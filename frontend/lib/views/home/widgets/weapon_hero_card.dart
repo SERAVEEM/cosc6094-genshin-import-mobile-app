@@ -23,9 +23,9 @@ class WeaponHeroCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           color: AppTheme.cardBg,
           image: DecorationImage(
-            image: weapon.image.startsWith('http')
+            image: (weapon.image.startsWith('http')
                 ? NetworkImage(weapon.image)
-                : AssetImage('assets/images/${weapon.image}') as ImageProvider,
+                : AssetImage(weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}')) as ImageProvider,
             fit: BoxFit.cover,
             onError: (err, stack) {
               // fallback handled by Stack containing fallback gradients
@@ -105,10 +105,10 @@ class WeaponHeroCard extends StatelessWidget {
                               const SizedBox(height: AppTheme.space1),
                               Row(
                                 children: [
-                                  const Icon(
-                                    Icons.diamond_rounded,
-                                    color: Colors.lightBlueAccent,
-                                    size: 16,
+                                  Image.asset(
+                                    'asset/Icon/Primo icons.png',
+                                    width: 16,
+                                    height: 16,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
