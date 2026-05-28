@@ -117,9 +117,9 @@ class WeaponHeroCard extends StatelessWidget {
                                       const SizedBox(width: 2), // <-- Spacing between icon and price text
                                       Text(
                                         weapon.price.toStringAsFixed(0),
-                                        style: const TextStyle(
+                                        style: GoogleFonts.plusJakartaSans(
                                           color: Colors.white,
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.w800,
                                           fontSize: 16, // <-- Price font size
                                         ),
                                       ),

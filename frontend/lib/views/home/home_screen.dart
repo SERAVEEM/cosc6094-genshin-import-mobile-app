@@ -109,12 +109,17 @@ class _HomeScreenState extends State<HomeScreen> {
             if (heroWeapon != null) ...[
               WeaponHeroCard(
                 weapon: heroWeapon,
-                onTap: () {
-                  Navigator.of(context).push(
+                onTap: () async {
+                  final result = await Navigator.of(context).push<int>(
                     MaterialPageRoute(
                       builder: (_) => WeaponDetailScreen(weaponId: heroWeapon.id),
                     ),
                   );
+                  if (result != null && mounted) {
+                    setState(() {
+                      _currentIndex = result;
+                    });
+                  }
                 },
               ),
               const SizedBox(height: AppTheme.space6),
@@ -145,12 +150,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   final weapon = trendingWeapons[index];
                   return TrendingItemTile(
                     weapon: weapon,
-                    onTap: () {
-                      Navigator.of(context).push(
+                    onTap: () async {
+                      final result = await Navigator.of(context).push<int>(
                         MaterialPageRoute(
                           builder: (_) => WeaponDetailScreen(weaponId: weapon.id),
                         ),
                       );
+                      if (result != null && mounted) {
+                        setState(() {
+                          _currentIndex = result;
+                        });
+                      }
                     },
                   );
                 },
@@ -294,12 +304,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       final weapon = weaponProvider.weapons[idx];
                       return TrendingItemTile(
                         weapon: weapon,
-                        onTap: () {
-                          Navigator.of(ctx).push(
+                        onTap: () async {
+                          final result = await Navigator.of(ctx).push<int>(
                             MaterialPageRoute(
                               builder: (_) => WeaponDetailScreen(weaponId: weapon.id),
                             ),
                           );
+                          if (result != null && mounted) {
+                            setState(() {
+                              _currentIndex = result;
+                            });
+                          }
                         },
                       );
                     },

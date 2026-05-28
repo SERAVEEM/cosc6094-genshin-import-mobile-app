@@ -99,9 +99,9 @@ class TrendingItemTile extends StatelessWidget {
                       const SizedBox(width: 4), // <-- Spacing between icon and price text
                       Text(
                         weapon.price.toStringAsFixed(0),
-                        style: const TextStyle(
+                        style: GoogleFonts.plusJakartaSans(
                           color: AppTheme.textPrimary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           fontSize: 14, // <-- Price font size
                         ),
                       ),
