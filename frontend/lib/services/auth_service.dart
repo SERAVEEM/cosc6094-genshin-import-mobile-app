@@ -4,13 +4,49 @@ import '../models/user.dart';
 import 'api_service.dart';
 
 class AuthService {
+  static final List<Map<String, dynamic>> _defaultUsers = [
+    {
+      'id': 'admin_default_id',
+      'name': 'Aimin Admin',
+      'email': 'admin@gachamerch.com',
+      'password': 'password123',
+      'role': 'admin',
+    },
+    {
+      'id': 'user_default_id',
+      'name': 'Tabibito User',
+      'email': 'user@gachamerch.com',
+      'password': 'password123',
+      'role': 'user',
+    }
+  ];
+
+  static Future<List<dynamic>> _loadAllUsers(SharedPreferences prefs) async {
+    final usersStr = prefs.getString('mock_users');
+    if (usersStr == null) {
+      await prefs.setString('mock_users', jsonEncode(_defaultUsers));
+      return _defaultUsers;
+    }
+    final List<dynamic> list = jsonDecode(usersStr);
+    bool changed = false;
+    for (var defUser in _defaultUsers) {
+      if (!list.any((u) => u['email'].toString().toLowerCase() == defUser['email'].toString().toLowerCase())) {
+        list.add(defUser);
+        changed = true;
+      }
+    }
+    if (changed) {
+      await prefs.setString('mock_users', jsonEncode(list));
+    }
+    return list;
+  }
+
   static Future<Map<String, dynamic>> register(String name, String email, String password) async {
     // Artificial delay to simulate network latency
     await Future.delayed(const Duration(milliseconds: 600));
 
     final prefs = await SharedPreferences.getInstance();
-    final usersStr = prefs.getString('mock_users') ?? '[]';
-    final List<dynamic> usersJson = jsonDecode(usersStr);
+    final List<dynamic> usersJson = await _loadAllUsers(prefs);
 
     // Check if email already exists
     if (usersJson.any((u) => u['email'].toString().toLowerCase() == email.toLowerCase())) {
@@ -43,31 +79,7 @@ class AuthService {
     await Future.delayed(const Duration(milliseconds: 600));
 
     final prefs = await SharedPreferences.getInstance();
-    
-    // Seed default users if mock_users is empty
-    final usersStr = prefs.getString('mock_users');
-    List<dynamic> usersJson = [];
-    if (usersStr == null) {
-      usersJson = [
-        {
-          'id': 'admin_default_id',
-          'name': 'Aimin Admin',
-          'email': 'admin@gachamerch.com',
-          'password': 'password123',
-          'role': 'admin',
-        },
-        {
-          'id': 'user_default_id',
-          'name': 'Tabibito User',
-          'email': 'user@gachamerch.com',
-          'password': 'password123',
-          'role': 'user',
-        }
-      ];
-      await prefs.setString('mock_users', jsonEncode(usersJson));
-    } else {
-      usersJson = jsonDecode(usersStr);
-    }
+    final List<dynamic> usersJson = await _loadAllUsers(prefs);
 
     // Find user
     dynamic matchedUser;

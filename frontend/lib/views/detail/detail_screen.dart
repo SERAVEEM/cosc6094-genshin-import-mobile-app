@@ -9,6 +9,7 @@ import '../../providers/transaction_provider.dart';
 import '../shared/error_dialog.dart';
 import '../auth/login_screen.dart';
 import '../shared/get_button.dart';
+import '../../providers/wishlist_provider.dart';
 
 class WeaponDetailScreen extends StatefulWidget {
   final String weaponId;
@@ -26,21 +27,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
   int _quantity = 1;
   bool _isPurchasing = false;
 
-  void _increment(int maxStock) {
-    if (_quantity < maxStock) {
-      setState(() {
-        _quantity++;
-      });
-    }
-  }
 
-  void _decrement() {
-    if (_quantity > 1) {
-      setState(() {
-        _quantity--;
-      });
-    }
-  }
 
   Future<void> _buy(Weapon weapon) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -307,28 +294,33 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(Weapon weapon) {
+    double ratingVal = 5.0;
+    try {
+      ratingVal = double.parse(weapon.ratings);
+    } catch (_) {}
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
-        height: 60,
+        height: 64,
         decoration: BoxDecoration(
           border: Border.symmetric(
             horizontal: BorderSide(
-              color: Colors.white.withOpacity(0.08),
-              width: 1,
+              color: Colors.white.withOpacity(0),
+              width: 0,
             ),
           ),
         ),
         child: Row(
           children: [
-            Expanded(child: _buildStatItem('Ratings', '5.0', extraWidget: _buildStars())),
+            Expanded(child: _buildStatItem('Ratings', weapon.ratings, extraWidget: _buildStars(ratingVal))),
             _buildDivider(),
-            Expanded(child: _buildStatItem('DMG', '250', subtitle: 'Melee')),
+            Expanded(child: _buildStatItem('DMG', weapon.dmg, subtitle: 'Melee')),
             _buildDivider(),
-            Expanded(child: _buildStatItem('Critical', '40%', subtitle: 'Rate')),
+            Expanded(child: _buildStatItem('Critical', weapon.critRate, subtitle: 'Rate')),
             _buildDivider(),
-            Expanded(child: _buildStatItem('Critical', '150%', subtitle: 'Damage')),
+            Expanded(child: _buildStatItem('Critical', weapon.critDmg, subtitle: 'Damage')),
           ],
         ),
       ),
@@ -337,11 +329,11 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
 
   Widget _buildDivider() {
     return VerticalDivider(
-      color: Colors.white.withOpacity(0.08),
+      color: Colors.white.withOpacity(1.0),
       width: 1,
       thickness: 1,
-      indent: 12,
-      endIndent: 12,
+      indent: 8,
+      endIndent: 8,
     );
   }
 
@@ -352,9 +344,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
         Text(
           label,
           style: GoogleFonts.plusJakartaSans(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: Colors.white.withOpacity(0.5),
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Colors.white.withOpacity(1.0),
           ),
         ),
         const SizedBox(height: 3),
@@ -362,7 +354,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
           value,
           style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
             color: Colors.white,
           ),
         ),
@@ -372,8 +364,8 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             subtitle,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: Colors.white.withOpacity(0.5),
+              fontWeight: FontWeight.w700,
+              color: Colors.white.withOpacity(1.0),
             ),
           ),
         ],
@@ -385,17 +377,18 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
     );
   }
 
-  Widget _buildStars() {
+  Widget _buildStars(double rating) {
+    int fullStars = rating.floor();
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(
         5,
-        (_) => const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 0.5),
+        (index) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 0.5),
           child: Icon(
-            Icons.star_border_rounded,
+            index < fullStars ? Icons.star_rounded : Icons.star_outline_rounded,
             size: 10,
-            color: Colors.white70,
+            color: const Color(0xFFFFB300),
           ),
         ),
       ),
@@ -403,17 +396,11 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
   }
 
   Widget _buildGallery(Weapon weapon) {
-    final List<String> slides = widget.weaponId == 'w1000001'
-        ? [
-            'assets/Product/Missplitter showcase.png',
-            'assets/Product/mistsplitter Banner.png',
-            'assets/Product/Missplitter showcase2.png',
-          ]
-        : [
-            weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}',
-            'assets/Product/Sword of destiny.png',
-            'assets/Product/Susano\'o sword.png',
-          ];
+    final List<String> slides = [
+      weapon.showcase1,
+      weapon.showcase2,
+      weapon.showcase3,
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,7 +421,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                   image: DecorationImage(
                     image: (slides[index].startsWith('http')
                         ? NetworkImage(slides[index])
-                        : AssetImage(slides[index])) as ImageProvider,
+                        : AssetImage(slides[index].startsWith('assets/') ? slides[index] : 'assets/images/${slides[index]}')) as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -446,7 +433,13 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
     );
   }
 
-  Widget _buildReviewsSection() {
+  Widget _buildReviewsSection(Weapon weapon) {
+    double ratingVal = 5.0;
+    try {
+      ratingVal = double.parse(weapon.ratings);
+    } catch (_) {}
+    int fullStars = ratingVal.floor();
+
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24.0, top: 24.0),
       child: Column(
@@ -456,7 +449,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             'Ratings & Reviews',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
           ),
@@ -465,7 +458,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                '5.0',
+                weapon.ratings,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 48,
                   fontWeight: FontWeight.w800,
@@ -476,13 +469,14 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+              
                   Row(
                     children: List.generate(
                       5,
-                      (_) => const Icon(
-                        Icons.star_border_rounded,
+                      (index) => Icon(
+                        index < fullStars ? Icons.star_rounded : Icons.star_border_rounded,
                         size: 18,
-                        color: Colors.white,
+                        color: index < fullStars ? const Color(0xFFFFB300) : Colors.white,
                       ),
                     ),
                   ),
@@ -491,7 +485,8 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                     '750 Ratings',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
-                      color: Colors.white.withOpacity(0.4),
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white.withOpacity(0.6),
                     ),
                   ),
                 ],
@@ -586,6 +581,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
   Widget build(BuildContext context) {
     final weaponProvider = Provider.of<WeaponProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
+    final wishlistProvider = Provider.of<WishlistProvider>(context);
     
     final weaponIndex = weaponProvider.rawWeapons.indexWhere((w) => w.id == widget.weaponId);
     if (weaponIndex == -1) {
@@ -617,11 +613,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                         decoration: BoxDecoration(
                           color: AppTheme.cardBg,
                           image: DecorationImage(
-                            image: (widget.weaponId == 'w1000001'
-                                ? const AssetImage('assets/Product/mistsplitter Banner.png')
-                                : (weapon.image.startsWith('http')
-                                    ? NetworkImage(weapon.image)
-                                    : AssetImage(weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}'))) as ImageProvider,
+                            image: (weapon.banner.startsWith('http')
+                                ? NetworkImage(weapon.banner)
+                                : AssetImage(weapon.banner.startsWith('assets/') ? weapon.banner : 'assets/images/${weapon.banner}')) as ImageProvider,
                             fit: BoxFit.cover,
                             onError: (err, stack) {},
                           ),
@@ -649,6 +643,35 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                             Icons.arrow_back_ios_new_rounded,
                             color: Colors.white,
                             size: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: GestureDetector(
+                        onTap: () => wishlistProvider.toggleWishlist(weapon.id),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.black.withOpacity(0.4),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            wishlistProvider.isWishlisted(weapon.id)
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: wishlistProvider.isWishlisted(weapon.id)
+                                ? const Color(0xffFF5252)
+                                : Colors.white,
+                            size: 18,
                           ),
                         ),
                       ),
@@ -702,6 +725,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.w700,
                               fontSize: 12,
                               color: Colors.white.withOpacity(0.6),
                             ),
@@ -711,7 +735,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                             isOutOfStock ? 'Out of Stock' : 'In Stock (${weapon.stock} items left)',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 11,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w900,
                               color: isOutOfStock ? const Color(0xffFF5252) : const Color(0xff3CDD3C),
                             ),
                           ),
@@ -754,9 +778,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                         const SizedBox(height: 8),
                         GetButton(
                           onTap: isOutOfStock ? null : () => _showPurchaseBottomSheet(context, weapon),
-                          width: 58,
-                          height: 24,
-                          fontSize: 11,
+                          width: 64,
+                          height: 28,
+                          fontSize: 12,
                         ),
                         const SizedBox(height: 6),
                         Padding(
@@ -766,12 +790,12 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                             children: [
                               Image.asset(
                                 'asset/Icon/Primo icons.png',
-                                width: 14,
-                                height: 14,
+                                width: 18,
+                                height: 18,
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '+ ${weapon.price.toStringAsFixed(0)}',
+                                weapon.price.toStringAsFixed(0),
                                 style: GoogleFonts.plusJakartaSans(
                                   color: const Color(0xff8AD4FF),
                                   fontWeight: FontWeight.w800,
@@ -788,13 +812,13 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
               ),
               
               // Stats grid block
-              _buildStatsRow(),
+              _buildStatsRow(weapon),
               
               // Screenshot Gallery row
               _buildGallery(weapon),
               
               // Ratings & Reviews section
-              _buildReviewsSection(),
+              _buildReviewsSection(weapon),
             ],
           ),
         ),

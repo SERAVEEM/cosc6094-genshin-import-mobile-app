@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/transaction.dart';
 import '../models/user.dart';
-import 'api_service.dart';
 import 'weapon_service.dart';
 
 class TransactionService {
