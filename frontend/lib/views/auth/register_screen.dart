@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../providers/auth_provider.dart';
@@ -17,6 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -52,6 +54,121 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ErrorDialog.show(context, e.toString().replaceAll('Exception: ', ''));
       }
     }
+  }
+
+  Future<void> _registerGoogle() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return;
+
+      await authProvider.loginOauth(
+        googleUser.email,
+        googleUser.displayName ?? 'Google Traveler',
+        googleUser.id,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login via Google berhasil!')),
+        );
+        if (Navigator.canPop(context)) {
+          Navigator.of(context).pop();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        _showGoogleFallbackDialog(e.toString());
+      }
+    }
+  }
+
+  void _showGoogleFallbackDialog(String debugError) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xff111622),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: AppTheme.borderSubtle),
+          ),
+          title: Row(
+            children: [
+              Image.asset('assets/auth/google.png', height: 20),
+              const SizedBox(width: 8),
+              const Text(
+                'Google Sign-In Setup',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Native Google Sign-In failed to initialize:',
+                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  debugError,
+                  style: const TextStyle(color: AppTheme.accent, fontFamily: 'monospace', fontSize: 11),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Note: To run native OAuth, you must register your Android debug SHA-1 signature in the Google Cloud/Firebase Console.\n\nWould you like to register/log in using a mock Google Traveler account instead?',
+                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12, height: 1.4),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('CANCEL', style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                try {
+                  await authProvider.loginOauth(
+                    'google_traveler@gachamerch.com',
+                    'Google Traveler',
+                    'oauth_google_123456789',
+                  );
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Login via Google berhasil!')),
+                    );
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop();
+                    }
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ErrorDialog.show(context, e.toString().replaceAll('Exception: ', ''));
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.accent,
+                foregroundColor: Colors.black,
+              ),
+              child: const Text('MOCK LOGIN', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _registerMockSocial(String source) async {
@@ -350,7 +467,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 _socialButton(
                                   label: 'Google',
                                   imageAsset: 'assets/auth/google.png',
-                                  onPressed: () => _registerMockSocial('google'),
+                                  onPressed: _registerGoogle,
                                 ),
                                 const SizedBox(width: 16),
                                 _socialButton(
