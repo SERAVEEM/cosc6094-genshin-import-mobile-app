@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             : 'U',
                         style: const TextStyle(
                           color: Colors.black,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           fontSize: 14,
                         ),
                       ),

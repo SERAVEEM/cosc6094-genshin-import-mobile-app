@@ -84,11 +84,13 @@ void main() {
         'weapon_name': 'Wolf\'s Gravestone',
         'weapon_type': 'Claymore',
         'weapon_image': 'wolf.png',
+        'redeem_code': 'GS-ABCD-EFGH-IJKL',
       };
       final tx = Transaction.fromJson(json);
       expect(tx.id, 'tx101');
       expect(tx.quantity, 2);
       expect(tx.weaponName, 'Wolf\'s Gravestone');
+      expect(tx.redeemCode, 'GS-ABCD-EFGH-IJKL');
     });
   });
 

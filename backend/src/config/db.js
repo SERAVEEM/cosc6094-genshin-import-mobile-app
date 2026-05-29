@@ -222,13 +222,14 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
     
     // 12. INSERT INTO transactions
     if (normSql.includes('INSERT INTO transactions')) {
-      const [id, user_id, weapon_id, quantity, total_price] = params;
+      const [id, user_id, weapon_id, quantity, total_price, redeem_code] = params;
       const newTx = {
         id,
         user_id,
         weapon_id,
         quantity,
         total_price,
+        redeem_code: redeem_code || null,
         created_at: new Date().toISOString()
       };
       transactions.push(newTx);

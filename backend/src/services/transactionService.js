@@ -3,6 +3,12 @@ import pool from '../config/db.js';
 import * as weaponRepository from '../repositories/weaponRepository.js';
 import * as transactionRepository from '../repositories/transactionRepository.js';
 
+const generateRedeemCode = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const segment = () => Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  return `GS-${segment()}-${segment()}-${segment()}`;
+};
+
 export const purchaseItem = async (userId, { weapon_id, quantity }) => {
   const qty = parseInt(quantity);
   
@@ -44,12 +50,14 @@ export const purchaseItem = async (userId, { weapon_id, quantity }) => {
     // 4. Log transaction
     const total_price = qty * parseFloat(weapon.price);
     const transactionId = uuidv4();
+    const redeem_code = generateRedeemCode();
     const newTransaction = {
       id: transactionId,
       user_id: userId,
       weapon_id,
       quantity: qty,
-      total_price
+      total_price,
+      redeem_code
     };
 
     const loggedTx = await transactionRepository.createTransactional(conn, newTransaction);
