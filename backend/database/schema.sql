@@ -24,8 +24,23 @@ CREATE TABLE IF NOT EXISTS `weapons` (
   `stock` INT NOT NULL DEFAULT 0,
   `image` VARCHAR(255) NOT NULL,
   `price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `banner` VARCHAR(255) NOT NULL DEFAULT 'default_banner.png',
+  `showcase1` VARCHAR(255) NOT NULL DEFAULT 'default_showcase1.png',
+  `showcase2` VARCHAR(255) NOT NULL DEFAULT 'default_showcase2.png',
+  `showcase3` VARCHAR(255) NOT NULL DEFAULT 'default_showcase3.png',
   `deleted_at` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table 2.5: weapon_stats
+CREATE TABLE IF NOT EXISTS `weapon_stats` (
+  `weapon_id` VARCHAR(36) NOT NULL,
+  `ratings` VARCHAR(50) NOT NULL DEFAULT '5.0',
+  `dmg` VARCHAR(50) NOT NULL DEFAULT '0',
+  `crit_rate` VARCHAR(50) NOT NULL DEFAULT '0%',
+  `crit_dmg` VARCHAR(50) NOT NULL DEFAULT '0%',
+  PRIMARY KEY (`weapon_id`),
+  CONSTRAINT `fk_weapon_stats_weapons` FOREIGN KEY (`weapon_id`) REFERENCES `weapons` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table 3: transactions
@@ -52,8 +67,15 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `oauth_id`, `role`) VALU
 ON DUPLICATE KEY UPDATE `email`=`email`, `password`=VALUES(`password`);
 
 -- Weapons Seed
-INSERT INTO `weapons` (`id`, `name`, `type`, `description`, `stock`, `image`, `price`, `deleted_at`) VALUES
-('w1000001-eb23-49ec-8cb3-7a9192461421', 'Wolf\'s Gravestone', 'Claymore', 'A longsword used by the Wolf Knight. Originally just a heavy sheet of iron, it gained legendary power through its close friendship with the wolf.', 5, 'wolf_gravestone.png', 1500000.00, NULL),
-('w1000002-eb23-49ec-8cb3-7a9192461421', 'Primordial Jade Winged-Spear', 'Polearm', 'A jade spear created by the Archons. Its light shines with the purity of primeval stone, capable of piercing dragons and sealing gods.', 3, 'pjws.png', 1400000.00, NULL),
-('w1000003-eb23-49ec-8cb3-7a9192461421', 'Gladiator\'s Nostalgia', 'Artifact-Flower', 'A flower badge worn by the ancient gladiators. Symbolizes the dreams and nostalgia of the fighters who fought in the colosseum.', 10, 'gladiator_flower.png', 500000.00, NULL)
+INSERT INTO `weapons` (`id`, `name`, `type`, `description`, `stock`, `image`, `price`, `banner`, `showcase1`, `showcase2`, `showcase3`, `deleted_at`) VALUES
+('w1000001-eb23-49ec-8cb3-7a9192461421', 'Wolf\'s Gravestone', 'Claymore', 'A longsword used by the Wolf Knight. Originally just a heavy sheet of iron, it gained legendary power through its close friendship with the wolf.', 5, 'wolf_gravestone.png', 1500000.00, 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase.png', 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase2.png', NULL),
+('w1000002-eb23-49ec-8cb3-7a9192461421', 'Primordial Jade Winged-Spear', 'Polearm', 'A jade spear created by the Archons. Its light shines with the purity of primeval stone, capable of piercing dragons and sealing gods.', 3, 'pjws.png', 1400000.00, 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase.png', 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase2.png', NULL),
+('w1000003-eb23-49ec-8cb3-7a9192461421', 'Gladiator\'s Nostalgia', 'Artifact-Flower', 'A flower badge worn by the ancient gladiators. Symbolizes the dreams and nostalgia of the fighters who fought in the colosseum.', 10, 'gladiator_flower.png', 500000.00, 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase.png', 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase2.png', NULL)
 ON DUPLICATE KEY UPDATE `name`=`name`;
+
+-- Stats Seed
+INSERT INTO `weapon_stats` (`weapon_id`, `ratings`, `dmg`, `crit_rate`, `crit_dmg`) VALUES
+('w1000001-eb23-49ec-8cb3-7a9192461421', '5.0', '250', '40%', '150%'),
+('w1000002-eb23-49ec-8cb3-7a9192461421', '4.8', '224', '35%', '130%'),
+('w1000003-eb23-49ec-8cb3-7a9192461421', '4.9', '0', '15%', '80%')
+ON DUPLICATE KEY UPDATE `ratings`=`ratings`;

@@ -128,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _socialButton({
     required String label,
-    required String letter,
+    required String imageAsset,
     required VoidCallback onPressed,
   }) {
     return Container(
@@ -147,21 +147,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  letter,
-                  style: const TextStyle(
-                    color: Color(0xffFF6B6B), // pink accent
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                Image.asset(
+                  imageAsset,
+                  height: 16,
+                  fit: BoxFit.contain,
                 ),
                 const SizedBox(width: 10),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
+                Flexible(
+                  child: Text(
+                    label,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -191,22 +191,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          
-          // Back button layered on top of the banner
-          Positioned(
-            top: 40,
-            left: 16,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black38,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-          ),
+
           
           // Scrollable Card content overlapping the banner
           Positioned.fill(
@@ -221,7 +206,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       width: double.infinity,
                       color: Colors.black,
                       padding: const EdgeInsets.only(
-                        top: 60, // Spacing to avoid title overlapping the curve
+                        top: 90, // Spacing to avoid title overlapping the curve
                         left: AppTheme.space6,
                         right: AppTheme.space6,
                         bottom: AppTheme.space8,
@@ -359,19 +344,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                             const SizedBox(height: AppTheme.space8),
                             
-                            // Social buttons Row (Centered side-by-side)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 _socialButton(
                                   label: 'Google',
-                                  letter: 'G',
+                                  imageAsset: 'assets/auth/google.png',
                                   onPressed: () => _registerMockSocial('google'),
                                 ),
                                 const SizedBox(width: 16),
                                 _socialButton(
                                   label: 'HoyoVerse',
-                                  letter: 'H',
+                                  imageAsset: 'assets/auth/hoyoverse.png',
                                   onPressed: () => _registerMockSocial('hoyoverse'),
                                 ),
                               ],
@@ -397,6 +381,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ),
+          
+          // Back button layered on top of the banner and scroll view
+          Positioned(
+            top: 40,
+            left: 16,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black38,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -407,15 +407,22 @@ class CurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    path.moveTo(0, 50);
-    // Draw curve from left to right: dips down in the middle-left, goes up on the right
-    path.quadraticBezierTo(
-      size.width * 0.4,
-      100, // Dips down further
-      size.width,
-      40,  // Goes back up
-    );
+    path.moveTo(0, size.height);
+    
+    // Left edge goes up, then curves at the top-left corner
+    path.lineTo(0, 60);
+    path.quadraticBezierTo(0, 30, 30, 30);
+    
+    // Slanted top edge line to the beginning of the top-right corner
+    path.lineTo(size.width - 30, 70);
+    
+    // Right curve to the right edge
+    path.quadraticBezierTo(size.width, 70, size.width, 100);
+    
+    // Right edge down to bottom right
     path.lineTo(size.width, size.height);
+    
+    // Bottom edge back to bottom left
     path.lineTo(0, size.height);
     path.close();
     return path;

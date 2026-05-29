@@ -24,6 +24,14 @@ class _WeaponFormScreenState extends State<WeaponFormScreen> {
   final _stockController = TextEditingController();
   final _priceController = TextEditingController();
   final _imageController = TextEditingController();
+  final _bannerController = TextEditingController();
+  final _showcase1Controller = TextEditingController();
+  final _showcase2Controller = TextEditingController();
+  final _showcase3Controller = TextEditingController();
+  final _ratingsController = TextEditingController();
+  final _dmgController = TextEditingController();
+  final _critRateController = TextEditingController();
+  final _critDmgController = TextEditingController();
   String _selectedType = 'Sword';
 
   bool _isSaving = false;
@@ -38,9 +46,43 @@ class _WeaponFormScreenState extends State<WeaponFormScreen> {
       _priceController.text = widget.weapon!.price.toStringAsFixed(0);
       _imageController.text = widget.weapon!.image;
       _selectedType = widget.weapon!.type;
+      _bannerController.text = widget.weapon!.banner;
+      _showcase1Controller.text = widget.weapon!.showcase1;
+      _showcase2Controller.text = widget.weapon!.showcase2;
+      _showcase3Controller.text = widget.weapon!.showcase3;
+      _ratingsController.text = widget.weapon!.ratings;
+      _dmgController.text = widget.weapon!.dmg;
+      _critRateController.text = widget.weapon!.critRate;
+      _critDmgController.text = widget.weapon!.critDmg;
     } else {
       _imageController.text = 'default_weapon.png';
+      _bannerController.text = 'assets/Product/mistsplitter Banner.png';
+      _showcase1Controller.text = 'assets/Product/Missplitter showcase.png';
+      _showcase2Controller.text = 'assets/Product/mistsplitter Banner.png';
+      _showcase3Controller.text = 'assets/Product/Missplitter showcase2.png';
+      _ratingsController.text = '5.0';
+      _dmgController.text = '0';
+      _critRateController.text = '0%';
+      _critDmgController.text = '0%';
     }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descController.dispose();
+    _stockController.dispose();
+    _priceController.dispose();
+    _imageController.dispose();
+    _bannerController.dispose();
+    _showcase1Controller.dispose();
+    _showcase2Controller.dispose();
+    _showcase3Controller.dispose();
+    _ratingsController.dispose();
+    _dmgController.dispose();
+    _critRateController.dispose();
+    _critDmgController.dispose();
+    super.dispose();
   }
 
   Future<void> _save() async {
@@ -60,6 +102,14 @@ class _WeaponFormScreenState extends State<WeaponFormScreen> {
       'price': double.parse(_priceController.text),
       'image': _imageController.text.trim(),
       'type': _selectedType,
+      'banner': _bannerController.text.trim(),
+      'showcase1': _showcase1Controller.text.trim(),
+      'showcase2': _showcase2Controller.text.trim(),
+      'showcase3': _showcase3Controller.text.trim(),
+      'ratings': _ratingsController.text.trim(),
+      'dmg': _dmgController.text.trim(),
+      'crit_rate': _critRateController.text.trim(),
+      'crit_dmg': _critDmgController.text.trim(),
     };
 
     try {
@@ -217,6 +267,155 @@ class _WeaponFormScreenState extends State<WeaponFormScreen> {
                   focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accent)),
                   enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.borderSubtle)),
                 ),
+              ),
+              const SizedBox(height: AppTheme.space4),
+
+              TextFormField(
+                controller: _bannerController,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Banner Filename/URL',
+                  labelStyle: TextStyle(color: AppTheme.textMuted),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accent)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.borderSubtle)),
+                ),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Banner URL/Filename cannot be empty';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppTheme.space4),
+
+              TextFormField(
+                controller: _showcase1Controller,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Showcase Image 1 Filename/URL',
+                  labelStyle: TextStyle(color: AppTheme.textMuted),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accent)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.borderSubtle)),
+                ),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Showcase Image 1 cannot be empty';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppTheme.space4),
+
+              TextFormField(
+                controller: _showcase2Controller,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Showcase Image 2 Filename/URL',
+                  labelStyle: TextStyle(color: AppTheme.textMuted),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accent)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.borderSubtle)),
+                ),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Showcase Image 2 cannot be empty';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppTheme.space4),
+
+              TextFormField(
+                controller: _showcase3Controller,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Showcase Image 3 Filename/URL',
+                  labelStyle: TextStyle(color: AppTheme.textMuted),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accent)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.borderSubtle)),
+                ),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Showcase Image 3 cannot be empty';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppTheme.space4),
+
+              TextFormField(
+                controller: _ratingsController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Ratings (e.g. 5.0)',
+                  labelStyle: TextStyle(color: AppTheme.textMuted),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accent)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.borderSubtle)),
+                ),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Ratings cannot be empty';
+                  }
+                  final parsed = double.tryParse(val);
+                  if (parsed == null || parsed < 0.0 || parsed > 5.0) {
+                    return 'Ratings must be between 0.0 and 5.0';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppTheme.space4),
+
+              TextFormField(
+                controller: _dmgController,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'DMG (e.g. 250)',
+                  labelStyle: TextStyle(color: AppTheme.textMuted),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accent)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.borderSubtle)),
+                ),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'DMG cannot be empty';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppTheme.space4),
+
+              TextFormField(
+                controller: _critRateController,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Critical Rate (e.g. 44.1%)',
+                  labelStyle: TextStyle(color: AppTheme.textMuted),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accent)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.borderSubtle)),
+                ),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Critical Rate cannot be empty';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppTheme.space4),
+
+              TextFormField(
+                controller: _critDmgController,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Critical Damage (e.g. 88.2%)',
+                  labelStyle: TextStyle(color: AppTheme.textMuted),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accent)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.borderSubtle)),
+                ),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Critical Damage cannot be empty';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: AppTheme.space8),
 

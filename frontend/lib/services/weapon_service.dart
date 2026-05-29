@@ -12,6 +12,14 @@ class WeaponService {
       'stock': 5,
       'image': 'assets/Home/download 1.png',
       'price': 500.0,
+      'banner': 'assets/Product/mistsplitter Banner.png',
+      'showcase1': 'assets/Product/Missplitter showcase.png',
+      'showcase2': 'assets/Product/mistsplitter Banner.png',
+      'showcase3': 'assets/Product/Missplitter showcase2.png',
+      'ratings': '5.0',
+      'dmg': '250',
+      'crit_rate': '40%',
+      'crit_dmg': '150%'
     },
     {
       'id': 'w1000002',
@@ -21,6 +29,14 @@ class WeaponService {
       'stock': 3,
       'image': 'assets/Product/Sword of destiny.png',
       'price': 700.0,
+      'banner': 'assets/Product/mistsplitter Banner.png',
+      'showcase1': 'assets/Product/Missplitter showcase.png',
+      'showcase2': 'assets/Product/mistsplitter Banner.png',
+      'showcase3': 'assets/Product/Missplitter showcase2.png',
+      'ratings': '4.8',
+      'dmg': '224',
+      'crit_rate': '35%',
+      'crit_dmg': '130%'
     },
     {
       'id': 'w1000003',
@@ -30,6 +46,14 @@ class WeaponService {
       'stock': 8,
       'image': 'assets/Product/Susano\'o sword.png',
       'price': 600.0,
+      'banner': 'assets/Product/mistsplitter Banner.png',
+      'showcase1': 'assets/Product/Missplitter showcase.png',
+      'showcase2': 'assets/Product/mistsplitter Banner.png',
+      'showcase3': 'assets/Product/Missplitter showcase2.png',
+      'ratings': '4.7',
+      'dmg': '210',
+      'crit_rate': '30%',
+      'crit_dmg': '120%'
     },
     {
       'id': 'w1000004',
@@ -39,6 +63,14 @@ class WeaponService {
       'stock': 5,
       'image': 'https://static.wikia.nocookie.net/gensin-impact/images/4/4f/Weapon_Wolf%27s_Gravestone.png/revision/latest?cb=20201026131436',
       'price': 1500.0,
+      'banner': 'assets/Product/mistsplitter Banner.png',
+      'showcase1': 'assets/Product/Missplitter showcase.png',
+      'showcase2': 'assets/Product/mistsplitter Banner.png',
+      'showcase3': 'assets/Product/Missplitter showcase2.png',
+      'ratings': '5.0',
+      'dmg': '250',
+      'crit_rate': '40%',
+      'crit_dmg': '150%'
     },
     {
       'id': 'w1000005',
@@ -48,6 +80,14 @@ class WeaponService {
       'stock': 4,
       'image': 'https://static.wikia.nocookie.net/gensin-impact/images/9/96/Weapon_Kagura%27s_Verity.png/revision/latest?cb=20220216170857',
       'price': 1200.0,
+      'banner': 'assets/Product/mistsplitter Banner.png',
+      'showcase1': 'assets/Product/Missplitter showcase.png',
+      'showcase2': 'assets/Product/mistsplitter Banner.png',
+      'showcase3': 'assets/Product/Missplitter showcase2.png',
+      'ratings': '4.8',
+      'dmg': '0',
+      'crit_rate': '33%',
+      'crit_dmg': '144%'
     },
     {
       'id': 'w1000006',
@@ -57,6 +97,14 @@ class WeaponService {
       'stock': 6,
       'image': 'https://static.wikia.nocookie.net/gensin-impact/images/9/9e/Weapon_Aqua_Simulacra.png/revision/latest?cb=20220601053155',
       'price': 1100.0,
+      'banner': 'assets/Product/mistsplitter Banner.png',
+      'showcase1': 'assets/Product/Missplitter showcase.png',
+      'showcase2': 'assets/Product/mistsplitter Banner.png',
+      'showcase3': 'assets/Product/Missplitter showcase2.png',
+      'ratings': '4.9',
+      'dmg': '0',
+      'crit_rate': '38%',
+      'crit_dmg': '158%'
     }
   ];
 
@@ -96,6 +144,14 @@ class WeaponService {
       'stock': weaponData['stock'] is int ? weaponData['stock'] : int.parse(weaponData['stock']?.toString() ?? '0'),
       'image': weaponData['image'] ?? 'assets/Home/download 1.png',
       'price': weaponData['price'] is double ? weaponData['price'] : double.parse(weaponData['price']?.toString() ?? '0.0'),
+      'banner': weaponData['banner'] ?? 'assets/Product/mistsplitter Banner.png',
+      'showcase1': weaponData['showcase1'] ?? 'assets/Product/Missplitter showcase.png',
+      'showcase2': weaponData['showcase2'] ?? 'assets/Product/mistsplitter Banner.png',
+      'showcase3': weaponData['showcase3'] ?? 'assets/Product/Missplitter showcase2.png',
+      'ratings': weaponData['ratings'] ?? '5.0',
+      'dmg': weaponData['dmg'] ?? '0',
+      'crit_rate': weaponData['crit_rate'] ?? weaponData['critRate'] ?? '0%',
+      'crit_dmg': weaponData['crit_dmg'] ?? weaponData['critDmg'] ?? '0%',
     };
 
     final updatedCatalog = catalog.map((w) => w.toJson()).toList()..add(newWeaponMap);
@@ -122,6 +178,14 @@ class WeaponService {
       'stock': weaponData['stock'] is int ? weaponData['stock'] : int.parse(weaponData['stock']?.toString() ?? catalog[index].stock.toString()),
       'image': weaponData['image'] ?? catalog[index].image,
       'price': weaponData['price'] is double ? weaponData['price'] : double.parse(weaponData['price']?.toString() ?? catalog[index].price.toString()),
+      'banner': weaponData['banner'] ?? catalog[index].banner,
+      'showcase1': weaponData['showcase1'] ?? catalog[index].showcase1,
+      'showcase2': weaponData['showcase2'] ?? catalog[index].showcase2,
+      'showcase3': weaponData['showcase3'] ?? catalog[index].showcase3,
+      'ratings': weaponData['ratings'] ?? catalog[index].ratings,
+      'dmg': weaponData['dmg'] ?? catalog[index].dmg,
+      'crit_rate': weaponData['crit_rate'] ?? weaponData['critRate'] ?? catalog[index].critRate,
+      'crit_dmg': weaponData['crit_dmg'] ?? weaponData['critDmg'] ?? catalog[index].critDmg,
     };
 
     final updatedList = catalog.map((w) => w.toJson()).toList();

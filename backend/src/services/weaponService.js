@@ -42,7 +42,15 @@ export const createWeapon = async (weaponData) => {
     description: weaponData.description || '',
     stock: parseInt(weaponData.stock),
     image: weaponData.image || 'default_weapon.png',
-    price: parseFloat(weaponData.price)
+    price: parseFloat(weaponData.price),
+    banner: weaponData.banner || 'default_banner.png',
+    showcase1: weaponData.showcase1 || 'default_showcase1.png',
+    showcase2: weaponData.showcase2 || 'default_showcase2.png',
+    showcase3: weaponData.showcase3 || 'default_showcase3.png',
+    ratings: weaponData.ratings || '5.0',
+    dmg: weaponData.dmg || '0',
+    crit_rate: weaponData.crit_rate || '0%',
+    crit_dmg: weaponData.crit_dmg || '0%'
   };
 
   return await weaponRepository.create(newWeapon);
@@ -64,7 +72,15 @@ export const updateWeapon = async (id, weaponData) => {
     description: weaponData.description || existing.description,
     stock: parseInt(weaponData.stock),
     image: weaponData.image || existing.image,
-    price: parseFloat(weaponData.price)
+    price: parseFloat(weaponData.price),
+    banner: weaponData.banner || existing.banner,
+    showcase1: weaponData.showcase1 || existing.showcase1,
+    showcase2: weaponData.showcase2 || existing.showcase2,
+    showcase3: weaponData.showcase3 || existing.showcase3,
+    ratings: weaponData.ratings || existing.ratings || '5.0',
+    dmg: weaponData.dmg || existing.dmg || '0',
+    crit_rate: weaponData.crit_rate || existing.crit_rate || '0%',
+    crit_dmg: weaponData.crit_dmg || existing.crit_dmg || '0%'
   };
 
   return await weaponRepository.update(id, updatedWeapon);

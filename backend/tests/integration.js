@@ -131,8 +131,11 @@ async function runTests() {
   console.log('====================================\n');
 }
 
-console.log('[Test Setup] Launching API server on port 3000...');
-const server = spawn('node', ['src/app.js'], { stdio: 'pipe' });
+console.log('[Test Setup] Launching API server on port 3000 with mock DB...');
+const server = spawn('node', ['src/app.js'], {
+  stdio: 'pipe',
+  env: { ...process.env, DB_HOST: 'mock', NODE_ENV: 'test' }
+});
 
 server.stdout.on('data', (data) => {
   const msg = data.toString();
