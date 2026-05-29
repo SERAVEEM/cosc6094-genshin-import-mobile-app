@@ -19,6 +19,20 @@ class TransactionService {
     return list.map((item) => Transaction.fromJson(item)).toList();
   }
 
+  static String _generateRedeemCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final random = DateTime.now().microsecondsSinceEpoch;
+    String segment(int seedOffset) {
+      final buffer = StringBuffer();
+      for (int i = 0; i < 4; i++) {
+        final index = (random + seedOffset + i * 7) % chars.length;
+        buffer.write(chars[index]);
+      }
+      return buffer.toString();
+    }
+    return 'GS-${segment(100)}-${segment(200)}-${segment(300)}';
+  }
+
   static Future<Transaction> purchaseItem(String weaponId, int quantity) async {
     await Future.delayed(const Duration(milliseconds: 600));
     final prefs = await SharedPreferences.getInstance();
@@ -42,6 +56,7 @@ class TransactionService {
     });
 
     final totalPrice = weapon.price * quantity;
+    final String redeemCode = _generateRedeemCode();
     final newTxMap = {
       'id': 'tx_${DateTime.now().millisecondsSinceEpoch}',
       'user_id': user.id,
@@ -52,6 +67,7 @@ class TransactionService {
       'weapon_name': weapon.name,
       'weapon_type': weapon.type,
       'weapon_image': weapon.image,
+      'redeem_code': redeemCode,
     };
 
     final txsStr = prefs.getString('mock_transactions') ?? '[]';

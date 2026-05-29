@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   `weapon_id` VARCHAR(36) NOT NULL,
   `quantity` INT NOT NULL,
   `total_price` DECIMAL(15,2) NOT NULL,
+  `redeem_code` VARCHAR(255) DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `fk_transactions_users` (`user_id`),
@@ -79,3 +80,6 @@ INSERT INTO `weapon_stats` (`weapon_id`, `ratings`, `dmg`, `crit_rate`, `crit_dm
 ('w1000002-eb23-49ec-8cb3-7a9192461421', '4.8', '224', '35%', '130%'),
 ('w1000003-eb23-49ec-8cb3-7a9192461421', '4.9', '0', '15%', '80%')
 ON DUPLICATE KEY UPDATE `ratings`=`ratings`;
+
+-- Upgrade Migration step for existing transactions tables
+ALTER TABLE `transactions` ADD COLUMN IF NOT EXISTS `redeem_code` VARCHAR(255) DEFAULT NULL;
