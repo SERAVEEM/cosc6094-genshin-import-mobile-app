@@ -114,9 +114,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.3),
+                                        color: Colors.black.withValues(alpha: 0.3),
                                         borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(color: AppTheme.accent.withOpacity(0.3), width: 0.8),
+                                        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3), width: 0.8),
                                       ),
                                       child: Text(
                                         tx.redeemCode!,

@@ -42,21 +42,21 @@ class GlassTextField extends StatelessWidget {
           decoration: InputDecoration(
             labelText: labelText,
             labelStyle: TextStyle(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
             hintText: hintText,
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.35)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.35)),
             filled: true,
-            fillColor: Colors.white.withOpacity(0.06), // Frosted container fill
+            fillColor: Colors.white.withValues(alpha: 0.06), // Frosted container fill
             contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
               borderSide: BorderSide(
-                color: Colors.white.withOpacity(0.12), // Glass border
+                color: Colors.white.withValues(alpha: 0.12), // Glass border
                 width: 0.8,
               ),
             ),

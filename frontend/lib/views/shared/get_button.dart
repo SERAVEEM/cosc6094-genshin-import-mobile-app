@@ -25,7 +25,7 @@ class GetButton extends StatelessWidget {
     //
     // Translation of effects to Flutter:
     // - Frost: 4 -> ImageFilter.blur(sigmaX: 4, sigmaY: 4)
-    // - Fill: #656565 20% -> Color(0xff656565).withOpacity(0.20)
+    // - Fill: #656565 20% -> Color(0xff656565).withValues(alpha: 0.20)
     // - Refraction: 80 -> Translucent border highlight (Color(0xccffffff) or withOpacity(0.80))
     // - Depth: 20 -> Subtle shadow/offset to create layers (depth effect)
     // - Dispersion: 50 -> Blur radius of the shadows / light-bleed
@@ -37,12 +37,12 @@ class GetButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Colors.white.withOpacity(0.80), // Refraction: 80
+          color: Colors.white.withValues(alpha: 0.80), // Refraction: 80
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.20), // Depth: 20
+            color: Colors.black.withValues(alpha: 0.20), // Depth: 20
             blurRadius: 5.0, // Dispersion: 50
             spreadRadius: 0.0, // Splay: 0
             offset: const Offset(0, 1.5),
@@ -54,7 +54,7 @@ class GetButton extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0), // Frost: 4
           child: Container(
-            color: const Color(0xff656565).withOpacity(0.20), // Fill: #656565 20%
+            color: const Color(0xff656565).withValues(alpha: 0.20), // Fill: #656565 20%
             alignment: Alignment.center,
             child: Text(
               'Get',

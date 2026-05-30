@@ -177,7 +177,7 @@ class _WeaponFormScreenState extends State<WeaponFormScreen> {
               const SizedBox(height: AppTheme.space4),
 
               DropdownButtonFormField<String>(
-                value: _selectedType,
+                initialValue: _selectedType,
                 dropdownColor: AppTheme.cardBg,
                 style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16),
                 decoration: const InputDecoration(

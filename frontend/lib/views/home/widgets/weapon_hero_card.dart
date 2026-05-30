@@ -39,7 +39,7 @@ class WeaponHeroCard extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.15),
+                      Colors.black.withValues(alpha: 0.15),
                     ],
                   ),
                 ),
@@ -142,7 +142,7 @@ class WeaponHeroCard extends StatelessWidget {
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
-                                  Colors.black.withOpacity(0.25),
+                                  Colors.black.withValues(alpha: 0.25),
                                   Colors.transparent,
                                 ],
                               ),
