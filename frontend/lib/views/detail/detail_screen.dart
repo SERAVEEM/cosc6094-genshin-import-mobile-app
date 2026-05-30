@@ -89,7 +89,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
               color: const Color(0xff111622),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 width: 1.5,
               ),
             ),
@@ -101,7 +101,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                   height: 56,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xff3CDD3C).withOpacity(0.15),
+                    color: const Color(0xff3CDD3C).withValues(alpha: 0.15),
                   ),
                   child: const Icon(
                     Icons.check_circle_rounded,
@@ -124,7 +124,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     height: 1.4,
                   ),
                 ),
@@ -169,7 +169,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                             Text(
                               'Quantity: ${tx.quantity}',
                               style: GoogleFonts.plusJakartaSans(
-                                color: Colors.white.withOpacity(0.5),
+                                color: Colors.white.withValues(alpha: 0.5),
                                 fontSize: 12,
                               ),
                             ),
@@ -195,10 +195,10 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppTheme.accent.withOpacity(0.3),
+                      color: AppTheme.accent.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -312,7 +312,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                 ),
                 border: Border(
                   top: BorderSide(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     width: 1.5,
                   ),
                 ),
@@ -327,7 +327,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -379,7 +379,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.plusJakartaSans(
-                                color: Colors.white.withOpacity(0.6),
+                                color: Colors.white.withValues(alpha: 0.6),
                                 fontSize: 13,
                               ),
                             ),
@@ -395,7 +395,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                       Text(
                         'Quantity',
                         style: GoogleFonts.plusJakartaSans(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -436,7 +436,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                       Text(
                         'Total Cost',
                         style: GoogleFonts.plusJakartaSans(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -507,7 +507,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
         decoration: BoxDecoration(
           border: Border.symmetric(
             horizontal: BorderSide(
-              color: Colors.white.withOpacity(0),
+              color: Colors.white.withValues(alpha: 0),
               width: 0,
             ),
           ),
@@ -529,7 +529,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
 
   Widget _buildDivider() {
     return VerticalDivider(
-      color: Colors.white.withOpacity(1.0),
+      color: Colors.white.withValues(alpha: 1.0),
       width: 1,
       thickness: 1,
       indent: 8,
@@ -546,7 +546,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: Colors.white.withOpacity(1.0),
+            color: Colors.white.withValues(alpha: 1.0),
           ),
         ),
         const SizedBox(height: 3),
@@ -565,7 +565,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: Colors.white.withOpacity(1.0),
+              color: Colors.white.withValues(alpha: 1.0),
             ),
           ),
         ],
@@ -686,7 +686,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -744,7 +744,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                 timeAgo,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 11,
-                  color: Colors.white.withOpacity(0.4),
+                  color: Colors.white.withValues(alpha: 0.4),
                 ),
               ),
             ],
@@ -768,7 +768,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             content,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 11,
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
               height: 1.4,
             ),
           ),
@@ -832,9 +832,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                           height: 36,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.black.withOpacity(0.4),
+                            color: Colors.black.withValues(alpha: 0.4),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -857,9 +857,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                           height: 36,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.black.withOpacity(0.4),
+                            color: Colors.black.withValues(alpha: 0.4),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -927,7 +927,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: FontWeight.w700,
                               fontSize: 12,
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -1031,7 +1031,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.black,
         selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white.withOpacity(0.4),
+        unselectedItemColor: Colors.white.withValues(alpha: 0.4),
         showUnselectedLabels: true,
         selectedLabelStyle: GoogleFonts.plusJakartaSans(
           fontSize: 10,

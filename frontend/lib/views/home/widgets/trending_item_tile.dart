@@ -43,8 +43,8 @@ class TrendingItemTile extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.4),
-                        Colors.black.withOpacity(0.1),
+                        Colors.black.withValues(alpha: 0.4),
+                        Colors.black.withValues(alpha: 0.1),
                       ],
                     ),
                   ),
@@ -71,7 +71,7 @@ class TrendingItemTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xffd9d9d9).withOpacity(0.85),
+                      color: const Color(0xffd9d9d9).withValues(alpha: 0.85),
                       fontSize: 10,
                     ),
                   ),

@@ -85,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _showGoogleFallbackDialog(String debugError) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: const Color(0xff111622),
           shape: RoundedRectangleBorder(
@@ -108,14 +108,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               Text(
                 'Native Google Sign-In failed to initialize:',
-                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -126,36 +126,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 12),
               Text(
                 'Note: To run native OAuth, you must register your Android debug SHA-1 signature in the Google Cloud/Firebase Console.\n\nWould you like to register/log in using a mock Google Traveler account instead?',
-                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12, height: 1.4),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
               ),
             ],
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(),
               child: const Text('CANCEL', style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold)),
             ),
             ElevatedButton(
               onPressed: () async {
-                Navigator.of(context).pop();
-                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                final localContext = context;
+                Navigator.of(dialogContext).pop();
+                final authProvider = Provider.of<AuthProvider>(localContext, listen: false);
+                final scaffoldMessenger = ScaffoldMessenger.of(localContext);
+                final navigator = Navigator.of(localContext);
                 try {
                   await authProvider.loginOauth(
                     'google_traveler@gachamerch.com',
                     'Google Traveler',
                     'oauth_google_123456789',
                   );
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (localContext.mounted) {
+                    scaffoldMessenger.showSnackBar(
                       const SnackBar(content: Text('Login via Google berhasil!')),
                     );
-                    if (Navigator.canPop(context)) {
-                      Navigator.of(context).pop();
+                    if (navigator.canPop()) {
+                      navigator.pop();
                     }
                   }
                 } catch (e) {
-                  if (mounted) {
-                    ErrorDialog.show(context, e.toString().replaceAll('Exception: ', ''));
+                  if (localContext.mounted) {
+                    ErrorDialog.show(localContext, e.toString().replaceAll('Exception: ', ''));
                   }
                 }
               },
@@ -216,7 +219,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xff22252D).withOpacity(0.8), // Dark capsule fill
+            color: const Color(0xff22252D).withValues(alpha: 0.8), // Dark capsule fill
             borderRadius: BorderRadius.circular(30),
           ),
           child: TextFormField(
@@ -228,7 +231,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 13),
+              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.25), fontSize: 13),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               suffixIcon: suffixIcon,
               border: OutlineInputBorder(
@@ -251,7 +254,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       width: 140, // compact size
       decoration: BoxDecoration(
-        color: const Color(0xff22252D).withOpacity(0.8), // matching capsule fill
+        color: const Color(0xff22252D).withValues(alpha: 0.8), // matching capsule fill
         borderRadius: BorderRadius.circular(30),
       ),
       child: Material(
