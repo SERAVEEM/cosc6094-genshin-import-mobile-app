@@ -350,7 +350,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                           borderRadius: BorderRadius.circular(12),
                           color: const Color(0xff1c2436),
                           image: DecorationImage(
-                            image: (weapon.id == 'w1000001'
+                            image: (weapon.id.startsWith('w1000001')
                                 ? const AssetImage('assets/Product/Missplitter reforged.png')
                                 : (weapon.image.startsWith('http')
                                     ? NetworkImage(weapon.image)
@@ -375,7 +375,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              weapon.id == 'w1000001' ? 'The Ultimate last slash' : weapon.description,
+                              weapon.id.startsWith('w1000001') ? 'The Ultimate last slash' : weapon.description,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.plusJakartaSans(
@@ -894,7 +894,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                         borderRadius: BorderRadius.circular(16),
                         color: AppTheme.cardBg,
                         image: DecorationImage(
-                          image: (widget.weaponId == 'w1000001'
+                          image: (widget.weaponId.startsWith('w1000001')
                               ? const AssetImage('assets/Product/Missplitter reforged.png')
                               : (weapon.image.startsWith('http')
                                   ? NetworkImage(weapon.image)
@@ -921,7 +921,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            widget.weaponId == 'w1000001' ? 'The Ultimate last slash' : weapon.description,
+                            widget.weaponId.startsWith('w1000001') ? 'The Ultimate last slash' : weapon.description,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.plusJakartaSans(
