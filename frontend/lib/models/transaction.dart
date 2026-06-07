@@ -8,7 +8,6 @@ class Transaction {
   final String? weaponName;
   final String? weaponType;
   final String? weaponImage;
-  final String? redeemCode;
 
   Transaction({
     required this.id,
@@ -20,7 +19,6 @@ class Transaction {
     this.weaponName,
     this.weaponType,
     this.weaponImage,
-    this.redeemCode,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
@@ -34,7 +32,6 @@ class Transaction {
       weaponName: json['weapon_name'] as String?,
       weaponType: json['weapon_type'] as String?,
       weaponImage: json['weapon_image'] as String?,
-      redeemCode: json['redeem_code'] as String?,
     );
   }
 }

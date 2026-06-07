@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../providers/weapon_provider.dart';
 import 'weapon_form.dart';
-import 'error_logs_screen.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
@@ -20,22 +19,12 @@ class AdminDashboard extends StatelessWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.bug_report_outlined, color: Colors.redAccent),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ErrorLogsScreen()),
-              );
-            },
-            tooltip: 'View Error Logs',
-          ),
-          IconButton(
             icon: const Icon(Icons.add_box_rounded, color: AppTheme.accent),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const WeaponFormScreen()),
               );
             },
-            tooltip: 'Add New Product',
           ),
         ],
       ),

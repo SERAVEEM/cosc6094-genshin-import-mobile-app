@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../providers/auth_provider.dart';
@@ -17,7 +16,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -35,111 +33,22 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _loginGoogle() async {
+  Future<void> _loginMockGoogle() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return;
-
       await authProvider.loginOauth(
-        googleUser.email,
-        googleUser.displayName ?? 'Google Traveler',
-        googleUser.id,
+        'google_traveler@gachamerch.com',
+        'Google Traveler',
+        'oauth_google_123456789',
       );
       if (mounted && Navigator.canPop(context)) {
         Navigator.of(context).pop();
       }
     } catch (e) {
       if (mounted) {
-        _showGoogleFallbackDialog(e.toString());
+        ErrorDialog.show(context, e.toString().replaceAll('Exception: ', ''));
       }
     }
-  }
-
-  void _showGoogleFallbackDialog(String debugError) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          backgroundColor: const Color(0xff111622),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: AppTheme.borderSubtle),
-          ),
-          title: Row(
-            children: [
-              Image.asset('assets/auth/google.png', height: 20),
-              const SizedBox(width: 8),
-              const Text(
-                'Google Sign-In Setup',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Native Google Sign-In failed to initialize:',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 6),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  debugError,
-                  style: const TextStyle(color: AppTheme.accent, fontFamily: 'monospace', fontSize: 11),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Note: To run native OAuth, you must register your Android debug SHA-1 signature in the Google Cloud/Firebase Console.\n\nWould you like to log in using a mock Google Traveler account instead?',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('CANCEL', style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold)),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final localContext = context;
-                Navigator.of(dialogContext).pop();
-                final authProvider = Provider.of<AuthProvider>(localContext, listen: false);
-                final navigator = Navigator.of(localContext);
-                try {
-                  await authProvider.loginOauth(
-                    'google_traveler@gachamerch.com',
-                    'Google Traveler',
-                    'oauth_google_123456789',
-                  );
-                  if (localContext.mounted && navigator.canPop()) {
-                    navigator.pop();
-                  }
-                } catch (e) {
-                  if (localContext.mounted) {
-                    ErrorDialog.show(localContext, e.toString().replaceAll('Exception: ', ''));
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.accent,
-                foregroundColor: Colors.black,
-              ),
-              child: const Text('MOCK LOGIN', style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<void> _loginMockHoyo() async {
@@ -184,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xff22252D).withValues(alpha: 0.8), // Dark capsule fill
+            color: const Color(0xff22252D).withOpacity(0.8), // Dark capsule fill
             borderRadius: BorderRadius.circular(30),
           ),
           child: TextFormField(
@@ -196,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.25), fontSize: 13),
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 13),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               suffixIcon: suffixIcon,
               border: OutlineInputBorder(
@@ -213,13 +122,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _socialButton({
     required String label,
-    required String imageAsset,
+    required String letter,
     required VoidCallback onPressed,
   }) {
     return Container(
       width: 140, // compact size
       decoration: BoxDecoration(
-        color: const Color(0xff22252D).withValues(alpha: 0.8), // matching capsule fill
+        color: const Color(0xff22252D).withOpacity(0.8), // matching capsule fill
         borderRadius: BorderRadius.circular(30),
       ),
       child: Material(
@@ -232,21 +141,21 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  imageAsset,
-                  height: 16,
-                  fit: BoxFit.contain,
+                Text(
+                  letter,
+                  style: const TextStyle(
+                    color: Color(0xffFF6B6B), // pink accent
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
                 const SizedBox(width: 10),
-                Flexible(
-                  child: Text(
-                    label,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                    ),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -277,6 +186,23 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           
+          // Close button layered on top of the banner
+          if (Navigator.canPop(context))
+            Positioned(
+              top: 40,
+              left: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black38,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ),
+          
           // Scrollable Card content overlapping the banner
           Positioned.fill(
             child: SingleChildScrollView(
@@ -290,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       color: Colors.black,
                       padding: const EdgeInsets.only(
-                        top: 90, // Spacing to avoid title overlapping the curve
+                        top: 60, // Spacing to avoid title overlapping the curve
                         left: AppTheme.space6,
                         right: AppTheme.space6,
                         bottom: AppTheme.space8,
@@ -371,22 +297,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                             const SizedBox(height: AppTheme.space8),
                             
-                             Row(
-                               mainAxisAlignment: MainAxisAlignment.center,
-                               children: [
-                                 _socialButton(
-                                   label: 'Google',
-                                   imageAsset: 'assets/auth/google.png',
-                                   onPressed: _loginGoogle,
-                                 ),
-                                 const SizedBox(width: 16),
-                                 _socialButton(
-                                   label: 'HoyoVerse',
-                                   imageAsset: 'assets/auth/hoyoverse.png',
-                                   onPressed: _loginMockHoyo,
-                                 ),
-                               ],
-                             ),
+                            // Social buttons Row (Centered side-by-side)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _socialButton(
+                                  label: 'Google',
+                                  letter: 'G',
+                                  onPressed: _loginMockGoogle,
+                                ),
+                                const SizedBox(width: 16),
+                                _socialButton(
+                                  label: 'HoyoVerse',
+                                  letter: 'H',
+                                  onPressed: _loginMockHoyo,
+                                ),
+                              ],
+                            ),
                             const SizedBox(height: AppTheme.space8),
                             
                             // Redirection
@@ -412,23 +339,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          
-          // Close button layered on top of the banner and scroll view
-          if (Navigator.canPop(context))
-            Positioned(
-              top: 40,
-              left: 16,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black38,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -439,22 +349,15 @@ class CurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    path.moveTo(0, size.height);
-    
-    // Left edge goes up, then curves at the top-left corner
-    path.lineTo(0, 60);
-    path.quadraticBezierTo(0, 30, 30, 30);
-    
-    // Slanted top edge line to the beginning of the top-right corner
-    path.lineTo(size.width - 30, 70);
-    
-    // Right curve to the right edge
-    path.quadraticBezierTo(size.width, 70, size.width, 100);
-    
-    // Right edge down to bottom right
+    path.moveTo(0, 50);
+    // Draw curve from left to right: dips down in the middle-left, goes up on the right
+    path.quadraticBezierTo(
+      size.width * 0.4,
+      100, // Dips down further
+      size.width,
+      40,  // Goes back up
+    );
     path.lineTo(size.width, size.height);
-    
-    // Bottom edge back to bottom left
     path.lineTo(0, size.height);
     path.close();
     return path;

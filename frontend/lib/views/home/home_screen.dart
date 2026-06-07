@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../config/theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/weapon_provider.dart';
 import '../../providers/transaction_provider.dart';
 import 'widgets/category_chip.dart';
-import '../../providers/wishlist_provider.dart';
 import 'widgets/weapon_hero_card.dart';
 import 'widgets/trending_item_tile.dart';
 import '../detail/detail_screen.dart';
@@ -111,17 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
             if (heroWeapon != null) ...[
               WeaponHeroCard(
                 weapon: heroWeapon,
-                onTap: () async {
-                  final result = await Navigator.of(context).push<int>(
+                onTap: () {
+                  Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => WeaponDetailScreen(weaponId: heroWeapon.id),
                     ),
                   );
-                  if (result != null && mounted) {
-                    setState(() {
-                      _currentIndex = result;
-                    });
-                  }
                 },
               ),
               const SizedBox(height: AppTheme.space6),
@@ -152,17 +145,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   final weapon = trendingWeapons[index];
                   return TrendingItemTile(
                     weapon: weapon,
-                    onTap: () async {
-                      final result = await Navigator.of(context).push<int>(
+                    onTap: () {
+                      Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => WeaponDetailScreen(weaponId: weapon.id),
                         ),
                       );
-                      if (result != null && mounted) {
-                        setState(() {
-                          _currentIndex = result;
-                        });
-                      }
                     },
                   );
                 },
@@ -178,12 +166,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final weaponProvider = Provider.of<WeaponProvider>(context);
 
-    final wishlistProvider = Provider.of<WishlistProvider>(context);
-
     final List<Widget> views = [
       _buildHomeView(context, weaponProvider, authProvider),
       authProvider.isAdmin ? const AdminDashboard() : _buildSearchView(context, weaponProvider),
-      authProvider.isAuthenticated ? _buildWishlistView(context, weaponProvider, wishlistProvider) : _buildLoginRequiredView('Wishlist'),
+      authProvider.isAuthenticated ? _buildWishlistView() : _buildLoginRequiredView('Wishlist'),
       authProvider.isAuthenticated ? const HistoryScreen() : _buildLoginRequiredView('History'),
     ];
 
@@ -216,19 +202,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text('Log Out', style: TextStyle(color: Colors.redAccent)),
                       ),
                     ],
-                    child: CircleAvatar(
+                    child: const CircleAvatar(
                       radius: 18,
                       backgroundColor: AppTheme.accent,
-                      child: Text(
-                        (authProvider.user?.name ?? 'U').isNotEmpty
-                            ? authProvider.user!.name[0].toUpperCase()
-                            : 'U',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 14,
-                        ),
-                      ),
+                      backgroundImage: NetworkImage('https://emoji.gg/assets/emoji/8816-pepe-frog.png'),
                     ),
                   )
                 : IconButton(
@@ -317,17 +294,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       final weapon = weaponProvider.weapons[idx];
                       return TrendingItemTile(
                         weapon: weapon,
-                        onTap: () async {
-                          final result = await Navigator.of(ctx).push<int>(
+                        onTap: () {
+                          Navigator.of(ctx).push(
                             MaterialPageRoute(
                               builder: (_) => WeaponDetailScreen(weaponId: weapon.id),
                             ),
                           );
-                          if (result != null && mounted) {
-                            setState(() {
-                              _currentIndex = result;
-                            });
-                          }
                         },
                       );
                     },
@@ -338,73 +310,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildWishlistView(BuildContext context, WeaponProvider weaponProvider, WishlistProvider wishlistProvider) {
-    final wishlistedWeapons = weaponProvider.rawWeapons
-        .where((w) => wishlistProvider.items.contains(w.id))
-        .toList();
-
-    if (wishlistedWeapons.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.favorite_outline_rounded, size: 64, color: AppTheme.textMuted),
-            const SizedBox(height: 16),
-            Text(
-              'Your Wishlist is Empty',
-              style: GoogleFonts.plusJakartaSans(
-                color: AppTheme.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tap the heart icon on any weapon detail\npage to add it to your wishlist.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(color: AppTheme.textMuted, fontSize: 13),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+  Widget _buildWishlistView() {
+    return const Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Icon(Icons.favorite_rounded, size: 64, color: AppTheme.accent),
+          SizedBox(height: 16),
           Text(
-            'Wishlisted Items',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            'My Wishlist',
+            style: TextStyle(color: AppTheme.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: wishlistedWeapons.length,
-              itemBuilder: (ctx, idx) {
-                final weapon = wishlistedWeapons[idx];
-                return TrendingItemTile(
-                  weapon: weapon,
-                  onTap: () async {
-                    final result = await Navigator.of(ctx).push<int>(
-                      MaterialPageRoute(
-                        builder: (_) => WeaponDetailScreen(weaponId: weapon.id),
-                      ),
-                    );
-                    if (result != null && mounted) {
-                      setState(() {
-                        _currentIndex = result;
-                      });
-                    }
-                  },
-                );
-              },
-            ),
+          SizedBox(height: 8),
+          Text(
+            'Wishlist matches are currently in progress.',
+            style: TextStyle(color: AppTheme.textMuted),
           ),
         ],
       ),

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
-import '../../services/error_log_service.dart';
 
 class ErrorDialog {
   static void show(BuildContext context, String message) {
-    // Log error to persistent storage
-    ErrorLogService.logError(message);
-
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
