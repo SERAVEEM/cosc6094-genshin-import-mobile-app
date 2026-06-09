@@ -4,7 +4,6 @@ import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/weapon_provider.dart';
 import 'providers/transaction_provider.dart';
-import 'providers/wishlist_provider.dart';
 import 'views/home/home_screen.dart';
 
 void main() {
@@ -21,7 +20,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WeaponProvider()),
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
-        ChangeNotifierProvider(create: (_) => WishlistProvider()),
       ],
       child: MaterialApp(
         title: 'Genshin Import',

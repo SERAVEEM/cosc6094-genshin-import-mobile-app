@@ -1,8 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../config/theme.dart';
 import '../../../models/weapon.dart';
 import '../../shared/get_button.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class WeaponHeroCard extends StatelessWidget {
   final Weapon weapon;
@@ -39,7 +39,7 @@ class WeaponHeroCard extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withValues(alpha: 0.15),
+                      Colors.black.withOpacity(0.15),
                     ],
                   ),
                 ),
@@ -56,11 +56,9 @@ class WeaponHeroCard extends StatelessWidget {
                   child: Stack(
                     children: [
                       Container(
-                        padding: const EdgeInsets.only(
-                          left: AppTheme.space6,
-                          right: AppTheme.space4,
-                          top: AppTheme.space4,
-                          bottom: AppTheme.space4,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppTheme.space6,
+                          vertical: AppTheme.space4,
                         ),
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.only(
@@ -85,9 +83,9 @@ class WeaponHeroCard extends StatelessWidget {
                                 children: [
                                   Text(
                                     weapon.name.replaceFirst(' ', '\n'),
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: const TextStyle(
                                       fontSize: 24,
-                                      fontWeight: FontWeight.w700, 
+                                      fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                       height: 1.2,
                                     ),
@@ -99,31 +97,25 @@ class WeaponHeroCard extends StatelessWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(right: 1.0),
-                                  child: GetButton(),
-                                ),
+                                const GetButton(),
                                 const SizedBox(height: AppTheme.space1),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 7.0), // <-- Adjust margins for the whole price row here
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                        'asset/Icon/Primo icons.png',
-                                        width: 16, // <-- Primo Icon Width
-                                        height: 16, // <-- Primo Icon Height
+                                Row(
+                                  children: [
+                                    Image.asset(
+                                      'asset/Icon/Primo icons.png',
+                                      width: 16,
+                                      height: 16,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      weapon.price.toStringAsFixed(0),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
                                       ),
-                                      const SizedBox(width: 2), // <-- Spacing between icon and price text
-                                      Text(
-                                        weapon.price.toStringAsFixed(0),
-                                        style: GoogleFonts.plusJakartaSans(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 16, // <-- Price font size
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -142,7 +134,7 @@ class WeaponHeroCard extends StatelessWidget {
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
-                                  Colors.black.withValues(alpha: 0.25),
+                                  Colors.black.withOpacity(0.25),
                                   Colors.transparent,
                                 ],
                               ),

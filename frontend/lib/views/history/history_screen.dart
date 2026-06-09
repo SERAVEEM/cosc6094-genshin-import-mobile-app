@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../providers/transaction_provider.dart';
@@ -107,47 +106,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 'Qty: ${tx.quantity}  •  $dateStr',
                                 style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
                               ),
-                              if (tx.redeemCode != null) ...[
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withValues(alpha: 0.3),
-                                        borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3), width: 0.8),
-                                      ),
-                                      child: Text(
-                                        tx.redeemCode!,
-                                        style: const TextStyle(
-                                          color: AppTheme.accent,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 11,
-                                          letterSpacing: 1.1,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Clipboard.setData(ClipboardData(text: tx.redeemCode!));
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Redeem code copied!'),
-                                            duration: Duration(seconds: 2),
-                                          ),
-                                        );
-                                      },
-                                      child: const Icon(
-                                        Icons.copy_rounded,
-                                        color: AppTheme.accent,
-                                        size: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
                             ],
                           ),
                           trailing: Column(

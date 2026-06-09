@@ -25,14 +25,14 @@ class TransactionProvider with ChangeNotifier {
     }
   }
 
-  Future<void> purchaseItem(String weaponId, int quantity, {required Function(Transaction tx) onSuccess}) async {
+  Future<void> purchaseItem(String weaponId, int quantity, {required Function() onSuccess}) async {
     _isLoading = true;
     _errorMessage = '';
     notifyListeners();
     try {
       final tx = await TransactionService.purchaseItem(weaponId, quantity);
       _history.insert(0, tx);
-      onSuccess(tx);
+      onSuccess();
     } catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');
       rethrow;
