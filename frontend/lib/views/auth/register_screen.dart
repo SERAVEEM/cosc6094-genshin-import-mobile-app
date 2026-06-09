@@ -18,7 +18,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email'],
+    serverClientId: '203621729218-es7oitgrifuk9863muugk5v16t7gl9dg.apps.googleusercontent.com',
+  );
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -59,6 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _registerGoogle() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     try {
+      await _googleSignIn.signOut();
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return;
 
@@ -71,9 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login via Google berhasil!')),
         );
-        if (Navigator.canPop(context)) {
-          Navigator.of(context).pop();
-        }
+        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
       }
     } catch (e) {
       if (mounted) {
@@ -152,9 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     scaffoldMessenger.showSnackBar(
                       const SnackBar(content: Text('Login via Google berhasil!')),
                     );
-                    if (navigator.canPop()) {
-                      navigator.pop();
-                    }
+                    navigator.pushNamedAndRemoveUntil('/home', (route) => false);
                   }
                 } catch (e) {
                   if (localContext.mounted) {
@@ -187,6 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login via $source berhasil!')),
         );
+        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
       }
     } catch (e) {
       if (mounted) {

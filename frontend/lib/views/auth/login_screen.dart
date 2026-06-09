@@ -17,7 +17,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email'],
+    // Web client ID — required for Android Google Sign-In to resolve Error 10
+    serverClientId: '203621729218-es7oitgrifuk9863muugk5v16t7gl9dg.apps.googleusercontent.com',
+  );
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -25,8 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     try {
       await authProvider.login(_emailController.text.trim(), _passwordController.text.trim());
-      if (mounted && Navigator.canPop(context)) {
-        Navigator.of(context).pop();
+      // Navigate to HomeScreen on successful login
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
       }
     } catch (e) {
       if (mounted) {
@@ -38,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loginGoogle() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     try {
+      await _googleSignIn.signOut();
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return;
 
@@ -46,8 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
         googleUser.displayName ?? 'Google Traveler',
         googleUser.id,
       );
-      if (mounted && Navigator.canPop(context)) {
-        Navigator.of(context).pop();
+      // Navigate to HomeScreen on successful OAuth login
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
       }
     } catch (e) {
       if (mounted) {
@@ -121,8 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Google Traveler',
                     'oauth_google_123456789',
                   );
-                  if (localContext.mounted && navigator.canPop()) {
-                    navigator.pop();
+                  // Navigate to HomeScreen after successful mock Google login
+                  if (localContext.mounted) {
+                    navigator.pushReplacementNamed('/home');
                   }
                 } catch (e) {
                   if (localContext.mounted) {
@@ -150,8 +158,9 @@ class _LoginScreenState extends State<LoginScreen> {
         'HoyoVerse Traveler',
         'oauth_hoyoverse_123456789',
       );
-      if (mounted && Navigator.canPop(context)) {
-        Navigator.of(context).pop();
+      // Navigate to HomeScreen on successful mock Hoyo login
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
       }
     } catch (e) {
       if (mounted) {

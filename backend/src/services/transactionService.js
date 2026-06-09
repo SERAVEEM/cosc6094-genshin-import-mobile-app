@@ -65,6 +65,7 @@ export const purchaseItem = async (userId, { weapon_id, quantity }) => {
     await conn.commit();
     return {
       ...loggedTx,
+      created_at: new Date().toISOString(),
       weapon_name: weapon.name,
       price_per_item: weapon.price
     };

@@ -30,7 +30,7 @@ class Transaction {
       weaponId: json['weapon_id'] as String,
       quantity: json['quantity'] is int ? json['quantity'] : int.parse(json['quantity'].toString()),
       totalPrice: json['total_price'] is double ? json['total_price'] : double.parse(json['total_price'].toString()),
-      createdAt: json['created_at'] as String,
+      createdAt: json['created_at'] != null ? json['created_at'] as String : DateTime.now().toIso8601String(),
       weaponName: json['weapon_name'] as String?,
       weaponType: json['weapon_type'] as String?,
       weaponImage: json['weapon_image'] as String?,
