@@ -85,28 +85,29 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
   ];
 
   const transactions = [];
+  const comments = [];
 
   const executeMockQuery = (sql, params = []) => {
     const normSql = sql.replace(/\s+/g, ' ').trim();
-    
+
     // 1. SELECT from users WHERE email = ?
     if (normSql.includes('FROM users WHERE email = ?')) {
       const user = users.find(u => u.email === params[0]);
       return [user ? [{ ...user }] : []];
     }
-    
+
     // 2. SELECT from users WHERE session_token = ?
     if (normSql.includes('FROM users WHERE session_token = ?')) {
       const user = users.find(u => u.session_token === params[0]);
       return [user ? [{ ...user }] : []];
     }
-    
+
     // 3. SELECT from users WHERE oauth_id = ?
     if (normSql.includes('FROM users WHERE oauth_id = ?')) {
       const user = users.find(u => u.oauth_id === params[0]);
       return [user ? [{ ...user }] : []];
     }
-    
+
     // 4. INSERT INTO users
     if (normSql.includes('INSERT INTO users')) {
       const [id, name, email, password, oauth_id, role] = params;
@@ -114,7 +115,7 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
       users.push(newUser);
       return [[], { affectedRows: 1 }];
     }
-    
+
     // 5. UPDATE users SET session_token = ? WHERE id = ?
     if (normSql.includes('UPDATE users SET session_token = ? WHERE id = ?')) {
       const [token, id] = params;
@@ -124,19 +125,19 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
       }
       return [[], { affectedRows: 1 }];
     }
-    
+
     // 6. SELECT active weapons
     if (normSql.includes('FROM weapons') && normSql.includes('deleted_at IS NULL')) {
       const active = weapons.filter(w => w.deleted_at === null);
       return [active.map(w => ({ ...w }))];
     }
-    
+
     // 7. SELECT weapon by id (active or deleted, including FOR UPDATE)
     if (normSql.includes('FROM weapons') && (normSql.includes('id = ?') || normSql.includes('weapon_id = ?'))) {
       const weapon = weapons.find(w => w.id === params[0]);
       return [weapon ? [{ ...weapon }] : []];
     }
-    
+
     // 8. INSERT INTO weapons
     if (normSql.includes('INSERT INTO weapons')) {
       const [id, name, type, description, stock, image, price, banner, showcase1, showcase2, showcase3] = params;
@@ -162,13 +163,19 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
       const weapon = weapons.find(w => w.id === weapon_id);
       if (weapon) {
         weapon.ratings = ratings;
-        weapon.dmg = dmg;
-        weapon.crit_rate = crit_rate;
-        weapon.crit_dmg = crit_dmg;
+        if (dmg !== undefined) {
+          weapon.dmg = dmg;
+        }
+        if (crit_rate !== undefined) {
+          weapon.crit_rate = crit_rate;
+        }
+        if (crit_dmg !== undefined) {
+          weapon.crit_dmg = crit_dmg;
+        }
       }
       return [[], { affectedRows: 1 }];
     }
-    
+
     // 9. UPDATE weapons
     if (normSql.includes('UPDATE weapons SET name = ?')) {
       const [name, type, description, stock, image, price, banner, showcase1, showcase2, showcase3, id] = params;
@@ -200,7 +207,7 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
       }
       return [[], { affectedRows: 1 }];
     }
-    
+
     // 10. UPDATE weapons SET deleted_at = NOW()
     if (normSql.includes('UPDATE weapons SET deleted_at = NOW()')) {
       const weapon = weapons.find(w => w.id === params[0]);
@@ -209,7 +216,7 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
       }
       return [[], { affectedRows: 1 }];
     }
-    
+
     // 11. UPDATE weapons SET stock = stock - ?
     if (normSql.includes('UPDATE weapons SET stock = stock - ?')) {
       const [qty, id] = params;
@@ -219,7 +226,7 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
       }
       return [[], { affectedRows: 1 }];
     }
-    
+
     // 12. INSERT INTO transactions
     if (normSql.includes('INSERT INTO transactions')) {
       const [id, user_id, weapon_id, quantity, total_price, redeem_code] = params;
@@ -235,7 +242,7 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
       transactions.push(newTx);
       return [[], { affectedRows: 1 }];
     }
-    
+
     // 13. SELECT from transactions
     if (normSql.includes('FROM transactions')) {
       const userId = params[0];
@@ -251,7 +258,63 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
       });
       return [joined];
     }
-    
+
+    // 14. SELECT comments by weapon
+    if (normSql.includes('FROM comments c') && normSql.includes('WHERE c.weapon_id = ?')) {
+      const weaponId = params[0];
+      const joined = comments
+        .filter(c => c.weapon_id === weaponId)
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .map(c => {
+          const user = users.find(u => u.id === c.user_id);
+          return {
+            ...c,
+            user_name: user ? user.name : null
+          };
+        });
+      return [joined];
+    }
+
+    // 15. INSERT INTO comments
+    if (normSql.includes('INSERT INTO comments')) {
+      const [id, weapon_id, user_id, rating, content] = params;
+      comments.push({
+        id,
+        weapon_id,
+        user_id,
+        rating,
+        content,
+        created_at: new Date().toISOString()
+      });
+      return [[], { affectedRows: 1 }];
+    }
+
+    // 16. SELECT comment by id
+    if (normSql.includes('FROM comments c') && normSql.includes('WHERE c.id = ?')) {
+      const comment = comments.find(c => c.id === params[0]);
+      if (!comment) {
+        return [[]];
+      }
+      const user = users.find(u => u.id === comment.user_id);
+      return [[{
+        ...comment,
+        user_name: user ? user.name : null
+      }]];
+    }
+
+    // 17. SELECT comment stats
+    if (normSql.includes('COUNT(*) AS total_comments') && normSql.includes('AVG(rating) AS average_rating')) {
+      const weaponId = params[0];
+      const weaponComments = comments.filter(c => c.weapon_id === weaponId);
+      const average = weaponComments.length === 0
+        ? null
+        : weaponComments.reduce((sum, c) => sum + Number(c.rating), 0) / weaponComments.length;
+      return [[{
+        total_comments: weaponComments.length,
+        average_rating: average
+      }]];
+    }
+
     console.log('WARNING: Unmatched mock query:', sql, params);
     return [[], { affectedRows: 0 }];
   };
@@ -260,10 +323,10 @@ if (process.env.DB_HOST === 'mock' || process.env.NODE_ENV === 'test') {
     async execute(sql, params) {
       return executeMockQuery(sql, params);
     }
-    async beginTransaction() {}
-    async commit() {}
-    async rollback() {}
-    release() {}
+    async beginTransaction() { }
+    async commit() { }
+    async rollback() { }
+    release() { }
   }
 
   pool = {

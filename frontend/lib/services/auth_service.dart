@@ -62,6 +62,16 @@ class AuthService {
     return User.fromJson(responseData['user']);
   }
 
+  static Future<User> me() async {
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/auth/me'),
+      headers: await ApiService.getHeaders(),
+    );
+    _handleResponseError(response);
+    final responseData = jsonDecode(response.body);
+    return User.fromJson(responseData['user']);
+  }
+
   static Future<void> logout() async {
     try {
       final headers = await ApiService.getHeaders();

@@ -31,6 +31,7 @@ async function init() {
     console.log('[DB] Database "genshin_import" initialized successfully with seed data!');
   } catch (error) {
     console.error('[DB] Error initializing database:', error);
+    process.exitCode = 1;
   } finally {
     await connection.end();
   }

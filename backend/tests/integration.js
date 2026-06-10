@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 
-const PORT = 3000;
+const PORT = Number(process.env.TEST_PORT || 3001);
 const BASE_URL = `http://localhost:${PORT}/api`;
 
 async function runTests() {
@@ -65,7 +65,29 @@ async function runTests() {
   console.log('✔ New weapon created. ID:', weaponId);
   if (!weaponId) throw new Error('Weapon creation failed!');
 
-  // 6. User Purchase Weapon (Success)
+  // 6. User Comment on Weapon
+  console.log('User commenting on weapon...');
+  const createCommentRes = await fetch(`${BASE_URL}/weapons/${weaponId}/comments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${userToken}`
+    },
+    body: JSON.stringify({
+      rating: 4,
+      content: 'Great weapon for late-game builds.'
+    })
+  });
+  const createCommentData = await createCommentRes.json();
+  console.log('✔ Comment created by:', createCommentData.data.user_name);
+  if (createCommentRes.status !== 201) throw new Error('Comment creation failed!');
+
+  const commentsRes = await fetch(`${BASE_URL}/weapons/${weaponId}/comments`);
+  const commentsData = await commentsRes.json();
+  console.log('✔ Comments count:', commentsData.data.length);
+  if (commentsData.data.length !== 1) throw new Error('Comment fetch failed!');
+
+  // 7. User Purchase Weapon (Success)
   console.log('User purchasing weapon (qty 2)...');
   const purchaseRes = await fetch(`${BASE_URL}/transactions`, {
     method: 'POST',
@@ -90,8 +112,10 @@ async function runTests() {
   const getWeaponData = await getWeaponRes.json();
   console.log('✔ Current stock in DB (expected 3):', getWeaponData.data.stock);
   if (parseInt(getWeaponData.data.stock) !== 3) throw new Error('Stock deduction failed!');
+  console.log('✔ Current rating in DB (expected 4.0):', getWeaponData.data.ratings);
+  if (getWeaponData.data.ratings !== '4.0') throw new Error('Comment rating average failed!');
 
-  // 7. User Purchase Weapon (Fails due to stock limit)
+  // 8. User Purchase Weapon (Fails due to stock limit)
   console.log('User purchasing weapon (qty 4, exceeding stock of 3)...');
   const purchaseFailRes = await fetch(`${BASE_URL}/transactions`, {
     method: 'POST',
@@ -109,7 +133,7 @@ async function runTests() {
   console.log('✔ Error message returned:', purchaseFailData.message);
   if (purchaseFailRes.status !== 422) throw new Error('Purchase should have failed with status 422!');
 
-  // 8. Admin Soft Delete Weapon
+  // 9. Admin Soft Delete Weapon
   console.log('Admin deleting weapon...');
   const deleteRes = await fetch(`${BASE_URL}/weapons/${weaponId}`, {
     method: 'DELETE',
@@ -131,10 +155,10 @@ async function runTests() {
   console.log('====================================\n');
 }
 
-console.log('[Test Setup] Launching API server on port 3000 with mock DB...');
+console.log(`[Test Setup] Launching API server on port ${PORT} with mock DB...`);
 const server = spawn('node', ['src/app.js'], {
   stdio: 'pipe',
-  env: { ...process.env, DB_HOST: 'mock', NODE_ENV: 'test' }
+  env: { ...process.env, DB_HOST: 'mock', NODE_ENV: 'test', PORT: String(PORT) }
 });
 
 server.stdout.on('data', (data) => {

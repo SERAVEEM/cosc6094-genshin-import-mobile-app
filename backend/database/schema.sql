@@ -32,6 +32,14 @@ CREATE TABLE IF NOT EXISTS `weapons` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Upgrade migrations for existing local databases
+ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `session_token` VARCHAR(255) DEFAULT NULL;
+ALTER TABLE `users` ADD INDEX IF NOT EXISTS `idx_session_token` (`session_token`);
+ALTER TABLE `weapons` ADD COLUMN IF NOT EXISTS `banner` VARCHAR(255) NOT NULL DEFAULT 'default_banner.png';
+ALTER TABLE `weapons` ADD COLUMN IF NOT EXISTS `showcase1` VARCHAR(255) NOT NULL DEFAULT 'default_showcase1.png';
+ALTER TABLE `weapons` ADD COLUMN IF NOT EXISTS `showcase2` VARCHAR(255) NOT NULL DEFAULT 'default_showcase2.png';
+ALTER TABLE `weapons` ADD COLUMN IF NOT EXISTS `showcase3` VARCHAR(255) NOT NULL DEFAULT 'default_showcase3.png';
+
 -- Table 2.5: weapon_stats
 CREATE TABLE IF NOT EXISTS `weapon_stats` (
   `weapon_id` VARCHAR(36) NOT NULL,
@@ -41,6 +49,22 @@ CREATE TABLE IF NOT EXISTS `weapon_stats` (
   `crit_dmg` VARCHAR(50) NOT NULL DEFAULT '0%',
   PRIMARY KEY (`weapon_id`),
   CONSTRAINT `fk_weapon_stats_weapons` FOREIGN KEY (`weapon_id`) REFERENCES `weapons` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table 2.6: product comments
+CREATE TABLE IF NOT EXISTS `comments` (
+  `id` VARCHAR(36) NOT NULL,
+  `weapon_id` VARCHAR(36) NOT NULL,
+  `user_id` VARCHAR(36) NOT NULL,
+  `rating` TINYINT NOT NULL DEFAULT 5,
+  `content` TEXT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_comments_weapon_created` (`weapon_id`, `created_at`),
+  KEY `fk_comments_users` (`user_id`),
+  CONSTRAINT `fk_comments_weapons` FOREIGN KEY (`weapon_id`) REFERENCES `weapons` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_comments_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `chk_comments_rating` CHECK (`rating` BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table 3: transactions
@@ -72,14 +96,29 @@ INSERT INTO `weapons` (`id`, `name`, `type`, `description`, `stock`, `image`, `p
 ('w1000001-eb23-49ec-8cb3-7a9192461421', 'Wolf\'s Gravestone', 'Claymore', 'A longsword used by the Wolf Knight. Originally just a heavy sheet of iron, it gained legendary power through its close friendship with the wolf.', 5, 'assets/Product/Missplitter reforged.png', 1500000.00, 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase.png', 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase2.png', NULL),
 ('w1000002-eb23-49ec-8cb3-7a9192461421', 'Primordial Jade Winged-Spear', 'Polearm', 'A jade spear created by the Archons. Its light shines with the purity of primeval stone, capable of piercing dragons and sealing gods.', 3, 'assets/Product/Susano\'o sword.png', 1400000.00, 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase.png', 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase2.png', NULL),
 ('w1000003-eb23-49ec-8cb3-7a9192461421', 'Gladiator\'s Nostalgia', 'Artifact-Flower', 'A flower badge worn by the ancient gladiators. Symbolizes the dreams and nostalgia of the fighters who fought in the colosseum.', 10, 'assets/Product/Sword of destiny.png', 500000.00, 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase.png', 'assets/Product/mistsplitter Banner.png', 'assets/Product/Missplitter showcase2.png', NULL)
-ON DUPLICATE KEY UPDATE `name`=`name`;
+ON DUPLICATE KEY UPDATE
+`name`=VALUES(`name`),
+`type`=VALUES(`type`),
+`description`=VALUES(`description`),
+`stock`=VALUES(`stock`),
+`image`=VALUES(`image`),
+`price`=VALUES(`price`),
+`banner`=VALUES(`banner`),
+`showcase1`=VALUES(`showcase1`),
+`showcase2`=VALUES(`showcase2`),
+`showcase3`=VALUES(`showcase3`),
+`deleted_at`=VALUES(`deleted_at`);
 
 -- Stats Seed
 INSERT INTO `weapon_stats` (`weapon_id`, `ratings`, `dmg`, `crit_rate`, `crit_dmg`) VALUES
 ('w1000001-eb23-49ec-8cb3-7a9192461421', '5.0', '250', '40%', '150%'),
 ('w1000002-eb23-49ec-8cb3-7a9192461421', '4.8', '224', '35%', '130%'),
 ('w1000003-eb23-49ec-8cb3-7a9192461421', '4.9', '0', '15%', '80%')
-ON DUPLICATE KEY UPDATE `ratings`=`ratings`;
+ON DUPLICATE KEY UPDATE
+`ratings`=VALUES(`ratings`),
+`dmg`=VALUES(`dmg`),
+`crit_rate`=VALUES(`crit_rate`),
+`crit_dmg`=VALUES(`crit_dmg`);
 
--- Upgrade Migration step for existing transactions tables
+-- Upgrade migration step for existing transactions tables
 ALTER TABLE `transactions` ADD COLUMN IF NOT EXISTS `redeem_code` VARCHAR(255) DEFAULT NULL;

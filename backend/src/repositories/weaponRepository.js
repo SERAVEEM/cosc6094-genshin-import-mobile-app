@@ -90,3 +90,12 @@ export const updateStockTransactional = async (conn, id, quantityDeduction) => {
     [quantityDeduction, id]
   );
 };
+
+export const updateRating = async (id, rating) => {
+  await pool.execute(
+    `INSERT INTO weapon_stats (weapon_id, ratings)
+     VALUES (?, ?)
+     ON DUPLICATE KEY UPDATE ratings = VALUES(ratings)`,
+    [id, rating]
+  );
+};

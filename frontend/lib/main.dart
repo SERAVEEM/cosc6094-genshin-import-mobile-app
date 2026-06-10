@@ -5,6 +5,7 @@ import 'providers/auth_provider.dart';
 import 'providers/weapon_provider.dart';
 import 'providers/transaction_provider.dart';
 import 'providers/wishlist_provider.dart';
+import 'providers/comment_provider.dart';
 import 'views/home/home_screen.dart';
 
 void main() {
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => WeaponProvider()),
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
+        ChangeNotifierProvider(create: (_) => CommentProvider()),
       ],
       child: MaterialApp(
         title: 'Genshin Import',
@@ -29,9 +31,7 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.darkTheme,
         themeMode: ThemeMode.dark,
         home: const HomeScreen(),
-        routes: {
-          '/home': (_) => const HomeScreen(),
-        },
+        routes: {'/home': (_) => const HomeScreen()},
       ),
     );
   }

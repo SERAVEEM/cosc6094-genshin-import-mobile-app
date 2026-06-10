@@ -10,9 +10,10 @@ const generateRedeemCode = () => {
 };
 
 export const purchaseItem = async (userId, { weapon_id, quantity }) => {
-  const qty = parseInt(quantity);
+  const normalizedQuantity = String(quantity).trim();
+  const qty = Number(normalizedQuantity);
   
-  if (!weapon_id || isNaN(qty) || qty <= 0) {
+  if (!weapon_id || normalizedQuantity === '' || !Number.isInteger(qty) || qty <= 0) {
     const error = new Error('ID produk dan kuantitas pembelian wajib valid!');
     error.statusCode = 400;
     throw error;

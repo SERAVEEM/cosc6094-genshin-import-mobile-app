@@ -24,13 +24,16 @@ class AuthProvider with ChangeNotifier {
     try {
       final token = await ApiService.getToken();
       if (token != null) {
+        _user = await AuthService.me();
         final prefs = await SharedPreferences.getInstance();
-        final userStr = prefs.getString('auth_user');
-        if (userStr != null) {
-          _user = User.fromJson(jsonDecode(userStr));
-        }
+        await prefs.setString('auth_user', jsonEncode(_user!.toJson()));
       }
-    } catch (_) {}
+    } catch (_) {
+      await ApiService.removeToken();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('auth_user');
+      _user = null;
+    }
     _isChecking = false;
     notifyListeners();
   }

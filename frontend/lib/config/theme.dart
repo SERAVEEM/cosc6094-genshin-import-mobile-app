@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Color palette matching design/home.png and SKILL.md
-  static const Color background = Color(0xff000000);
+  static const Color background = Colors.black;
   static const Color cardBg = Color(0xff111622);
   static const Color accent = Color(0xffE5C07B); // Geo Gold
   static const Color textPrimary = Color(0xffFFFFFF);
@@ -31,19 +31,19 @@ class AppTheme {
         secondary: accent,
         surface: cardBg,
       ),
-      textTheme: GoogleFonts.plusJakartaSansTextTheme(
+      textTheme: GoogleFonts.montserratTextTheme(
         ThemeData.dark().textTheme,
       ).copyWith(
-        titleLarge: GoogleFonts.plusJakartaSans(
+        titleLarge: GoogleFonts.montserrat(
           color: textPrimary,
           fontWeight: FontWeight.bold,
           fontSize: 24,
         ),
-        bodyLarge: GoogleFonts.plusJakartaSans(
+        bodyLarge: GoogleFonts.montserrat(
           color: textPrimary,
           fontSize: 16,
         ),
-        bodyMedium: GoogleFonts.plusJakartaSans(
+        bodyMedium: GoogleFonts.montserrat(
           color: textMuted,
           fontSize: 14,
         ),

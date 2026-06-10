@@ -8,10 +8,19 @@ const validateWeapon = ({ name, price, stock }) => {
     throw error;
   }
   
-  const parsedPrice = parseFloat(price);
-  const parsedStock = parseInt(stock);
+  const normalizedPrice = String(price).trim();
+  const normalizedStock = String(stock).trim();
+  const parsedPrice = Number(normalizedPrice);
+  const parsedStock = Number(normalizedStock);
 
-  if (isNaN(parsedPrice) || parsedPrice <= 0 || isNaN(parsedStock) || parsedStock <= 0) {
+  if (
+    normalizedPrice === '' ||
+    normalizedStock === '' ||
+    !Number.isFinite(parsedPrice) ||
+    !Number.isInteger(parsedStock) ||
+    parsedPrice <= 0 ||
+    parsedStock <= 0
+  ) {
     const error = new Error('Data produk tidak valid! Pastikan harga dan stok berupa angka positif.');
     error.statusCode = 422;
     throw error;

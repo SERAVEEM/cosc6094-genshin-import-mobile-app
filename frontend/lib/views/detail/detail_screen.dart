@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/weapon.dart';
 import '../../models/transaction.dart';
+import '../../models/product_comment.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/weapon_provider.dart';
 import '../../providers/transaction_provider.dart';
+import '../../providers/comment_provider.dart';
 import '../shared/error_dialog.dart';
 import '../auth/login_screen.dart';
 import '../shared/get_button.dart';
@@ -16,10 +18,7 @@ import '../../providers/wishlist_provider.dart';
 class WeaponDetailScreen extends StatefulWidget {
   final String weaponId;
 
-  const WeaponDetailScreen({
-    super.key,
-    required this.weaponId,
-  });
+  const WeaponDetailScreen({super.key, required this.weaponId});
 
   @override
   State<WeaponDetailScreen> createState() => _WeaponDetailScreenState();
@@ -27,9 +26,89 @@ class WeaponDetailScreen extends StatefulWidget {
 
 class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
   int _quantity = 1;
+  int _commentRating = 5;
   bool _isPurchasing = false;
+  final TextEditingController _commentController = TextEditingController();
+  final FocusNode _commentFocusNode = FocusNode();
 
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        Provider.of<CommentProvider>(
+          context,
+          listen: false,
+        ).fetchComments(widget.weaponId);
+      }
+    });
+  }
 
+  @override
+  void dispose() {
+    _commentController.dispose();
+    _commentFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _startRating(AuthProvider authProvider) {
+    if (!authProvider.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to rate this product.')),
+      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
+      return;
+    }
+
+    FocusScope.of(context).requestFocus(_commentFocusNode);
+  }
+
+  Future<void> _submitComment(Weapon weapon) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (!authProvider.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please login to comment on this product.'),
+        ),
+      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
+      return;
+    }
+
+    final content = _commentController.text.trim();
+    if (content.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment must be at least 3 characters.')),
+      );
+      return;
+    }
+
+    final commentProvider = Provider.of<CommentProvider>(
+      context,
+      listen: false,
+    );
+    final weaponProvider = Provider.of<WeaponProvider>(context, listen: false);
+
+    try {
+      await commentProvider.createComment(weapon.id, _commentRating, content);
+      _commentController.clear();
+      await weaponProvider.fetchCatalog();
+      if (mounted) {
+        FocusScope.of(context).unfocus();
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Comment added.')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ErrorDialog.show(context, e.toString().replaceAll('Exception: ', ''));
+      }
+    }
+  }
 
   Future<void> _buy(Weapon weapon) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -37,9 +116,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please login to purchase items.')),
       );
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
       return;
     }
 
@@ -74,7 +153,11 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
     }
   }
 
-  void _showRedemptionDialog(BuildContext context, Weapon weapon, Transaction tx) {
+  void _showRedemptionDialog(
+    BuildContext context,
+    Weapon weapon,
+    Transaction tx,
+  ) {
     final redeemCode = tx.redeemCode ?? 'NO-CODE';
 
     showDialog(
@@ -129,7 +212,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Item Preview Card
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -145,9 +228,15 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           image: DecorationImage(
-                            image: (weapon.image.startsWith('http')
-                                ? NetworkImage(weapon.image)
-                                : AssetImage(weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}')) as ImageProvider,
+                            image:
+                                (weapon.image.startsWith('http')
+                                        ? NetworkImage(weapon.image)
+                                        : AssetImage(
+                                            weapon.image.startsWith('assets/')
+                                                ? weapon.image
+                                                : 'assets/images/${weapon.image}',
+                                          ))
+                                    as ImageProvider,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -180,7 +269,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Redeem Code Container
                 Text(
                   'REDEEM CODE',
@@ -193,7 +282,10 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12),
@@ -238,7 +330,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Close button
                 SizedBox(
                   width: double.infinity,
@@ -350,11 +442,21 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                           borderRadius: BorderRadius.circular(12),
                           color: const Color(0xff1c2436),
                           image: DecorationImage(
-                            image: (weapon.id.startsWith('w1000001')
-                                ? const AssetImage('assets/Product/Missplitter reforged.png')
-                                : (weapon.image.startsWith('http')
-                                    ? NetworkImage(weapon.image)
-                                    : AssetImage(weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}'))) as ImageProvider,
+                            image:
+                                (weapon.id.startsWith('w1000001')
+                                        ? const AssetImage(
+                                            'assets/Product/Missplitter reforged.png',
+                                          )
+                                        : (weapon.image.startsWith('http')
+                                              ? NetworkImage(weapon.image)
+                                              : AssetImage(
+                                                  weapon.image.startsWith(
+                                                        'assets/',
+                                                      )
+                                                      ? weapon.image
+                                                      : 'assets/images/${weapon.image}',
+                                                )))
+                                    as ImageProvider,
                             fit: BoxFit.cover,
                             onError: (err, stack) {},
                           ),
@@ -375,7 +477,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              weapon.id.startsWith('w1000001') ? 'The Ultimate last slash' : weapon.description,
+                              weapon.id.startsWith('w1000001')
+                                  ? 'The Ultimate last slash'
+                                  : weapon.description,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.plusJakartaSans(
@@ -402,12 +506,17 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                       Row(
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.remove_circle_outline, color: AppTheme.accent),
-                            onPressed: _quantity > 1 ? () {
-                              setSheetState(() {
-                                _quantity--;
-                              });
-                            } : null,
+                            icon: const Icon(
+                              Icons.remove_circle_outline,
+                              color: AppTheme.accent,
+                            ),
+                            onPressed: _quantity > 1
+                                ? () {
+                                    setSheetState(() {
+                                      _quantity--;
+                                    });
+                                  }
+                                : null,
                           ),
                           Text(
                             '$_quantity',
@@ -418,12 +527,17 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.add_circle_outline, color: AppTheme.accent),
-                            onPressed: _quantity < weapon.stock ? () {
-                              setSheetState(() {
-                                _quantity++;
-                              });
-                            } : null,
+                            icon: const Icon(
+                              Icons.add_circle_outline,
+                              color: AppTheme.accent,
+                            ),
+                            onPressed: _quantity < weapon.stock
+                                ? () {
+                                    setSheetState(() {
+                                      _quantity++;
+                                    });
+                                  }
+                                : null,
                           ),
                         ],
                       ),
@@ -462,7 +576,11 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                   ),
                   const SizedBox(height: 24),
                   _isPurchasing
-                      ? const Center(child: CircularProgressIndicator(color: AppTheme.accent))
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.accent,
+                          ),
+                        )
                       : ElevatedButton(
                           onPressed: () async {
                             Navigator.of(context).pop();
@@ -514,13 +632,33 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
         ),
         child: Row(
           children: [
-            Expanded(child: _buildStatItem('Ratings', weapon.ratings, extraWidget: _buildStars(ratingVal))),
+            Expanded(
+              child: _buildStatItem(
+                'Ratings',
+                weapon.ratings,
+                extraWidget: _buildStars(ratingVal),
+              ),
+            ),
             _buildDivider(),
-            Expanded(child: _buildStatItem('DMG', weapon.dmg, subtitle: 'Melee')),
+            Expanded(
+              child: _buildStatItem('DMG', weapon.dmg, subtitle: 'Melee'),
+            ),
             _buildDivider(),
-            Expanded(child: _buildStatItem('Critical', weapon.critRate, subtitle: 'Rate')),
+            Expanded(
+              child: _buildStatItem(
+                'Critical',
+                weapon.critRate,
+                subtitle: 'Rate',
+              ),
+            ),
             _buildDivider(),
-            Expanded(child: _buildStatItem('Critical', weapon.critDmg, subtitle: 'Damage')),
+            Expanded(
+              child: _buildStatItem(
+                'Critical',
+                weapon.critDmg,
+                subtitle: 'Damage',
+              ),
+            ),
           ],
         ),
       ),
@@ -537,7 +675,12 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
     );
   }
 
-  Widget _buildStatItem(String label, String value, {String? subtitle, Widget? extraWidget}) {
+  Widget _buildStatItem(
+    String label,
+    String value, {
+    String? subtitle,
+    Widget? extraWidget,
+  }) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -569,10 +712,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             ),
           ),
         ],
-        if (extraWidget != null) ...[
-          const SizedBox(height: 2),
-          extraWidget,
-        ],
+        if (extraWidget != null) ...[const SizedBox(height: 2), extraWidget],
       ],
     );
   }
@@ -614,14 +754,21 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             itemCount: slides.length,
             itemBuilder: (context, index) {
               return Container(
-                width: 200, // <-- Reduced width to maintain the clean landscape aspect ratio
+                width:
+                    200, // <-- Reduced width to maintain the clean landscape aspect ratio
                 margin: const EdgeInsets.only(right: 12),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   image: DecorationImage(
-                    image: (slides[index].startsWith('http')
-                        ? NetworkImage(slides[index])
-                        : AssetImage(slides[index].startsWith('assets/') ? slides[index] : 'assets/images/${slides[index]}')) as ImageProvider,
+                    image:
+                        (slides[index].startsWith('http')
+                                ? NetworkImage(slides[index])
+                                : AssetImage(
+                                    slides[index].startsWith('assets/')
+                                        ? slides[index]
+                                        : 'assets/images/${slides[index]}',
+                                  ))
+                            as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -633,15 +780,28 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
     );
   }
 
-  Widget _buildReviewsSection(Weapon weapon) {
+  Widget _buildReviewsSection(
+    Weapon weapon,
+    CommentProvider commentProvider,
+    AuthProvider authProvider,
+  ) {
+    final comments = commentProvider.commentsFor(weapon.id);
     double ratingVal = 5.0;
     try {
-      ratingVal = double.parse(weapon.ratings);
+      ratingVal = comments.isEmpty
+          ? double.parse(weapon.ratings)
+          : comments.map((comment) => comment.rating).reduce((a, b) => a + b) /
+                comments.length;
     } catch (_) {}
     int fullStars = ratingVal.floor();
 
     return Padding(
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24.0, top: 24.0),
+      padding: const EdgeInsets.only(
+        left: 16.0,
+        right: 16.0,
+        bottom: 24.0,
+        top: 24.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -658,7 +818,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                weapon.ratings,
+                ratingVal.toStringAsFixed(1),
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 48,
                   fontWeight: FontWeight.w800,
@@ -669,20 +829,23 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-              
                   Row(
                     children: List.generate(
                       5,
                       (index) => Icon(
-                        index < fullStars ? Icons.star_rounded : Icons.star_border_rounded,
+                        index < fullStars
+                            ? Icons.star_rounded
+                            : Icons.star_border_rounded,
                         size: 18,
-                        color: index < fullStars ? const Color(0xFFFFB300) : Colors.white,
+                        color: index < fullStars
+                            ? const Color(0xFFFFB300)
+                            : Colors.white,
                       ),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '750 Ratings',
+                    '${comments.length} ${comments.length == 1 ? 'Comment' : 'Comments'}',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
@@ -693,9 +856,35 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => _startRating(authProvider),
+              icon: const Icon(Icons.star_rounded, size: 18),
+              label: Text(
+                'RATE PRODUCT',
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 12,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppTheme.accent,
+                side: BorderSide(color: AppTheme.accent.withValues(alpha: 0.7)),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          _buildCommentForm(weapon, commentProvider, authProvider),
           const SizedBox(height: 24),
           Text(
-            'Helpful Reviews',
+            'Product Comments',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -703,22 +892,198 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _buildReviewCard(
-            'UNiyyyyy',
-            '5 mo ago',
-            'This Weapon is so good, GOAT, hands down. Makes me one shot every enemies. If you considere to buy this weapon, dont hesitate because this weapon is PEAK',
+          if (commentProvider.isLoading(weapon.id))
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: CircularProgressIndicator(color: AppTheme.accent),
+              ),
+            )
+          else if (commentProvider.errorMessage.isNotEmpty)
+            _buildCommentStatus(
+              commentProvider.errorMessage,
+              Icons.error_outline_rounded,
+            )
+          else if (comments.isEmpty)
+            _buildCommentStatus(
+              'No comments yet. Be the first to share your thoughts.',
+              Icons.chat_bubble_outline_rounded,
+            )
+          else
+            ...comments.map(_buildReviewCard),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommentForm(
+    Weapon weapon,
+    CommentProvider commentProvider,
+    AuthProvider authProvider,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xff1c2436),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            authProvider.isAuthenticated
+                ? 'Write a Comment'
+                : 'Login to Comment',
+            style: GoogleFonts.plusJakartaSans(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: Colors.white,
+            ),
           ),
-          _buildReviewCard(
-            'Axelotel',
-            '1 mo ago',
-            'This Weapon is so good, GOAT, hands down. Makes me one shot every enemies. If you considere to buy this weapon, dont hesitate because this weapon is PEAK',
+          const SizedBox(height: 12),
+          Row(
+            children: List.generate(5, (index) {
+              final rating = index + 1;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _commentRating = rating;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 4.0),
+                  child: Icon(
+                    rating <= _commentRating
+                        ? Icons.star_rounded
+                        : Icons.star_outline_rounded,
+                    size: 24,
+                    color: AppTheme.accent,
+                  ),
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _commentController,
+            focusNode: _commentFocusNode,
+            minLines: 3,
+            maxLines: 5,
+            maxLength: 500,
+            enabled:
+                authProvider.isAuthenticated && !commentProvider.isSubmitting,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12,
+              color: Colors.white,
+            ),
+            decoration: InputDecoration(
+              hintText: authProvider.isAuthenticated
+                  ? 'Share your experience with this product'
+                  : 'Please login before writing a comment',
+              hintStyle: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                color: Colors.white.withValues(alpha: 0.4),
+              ),
+              counterStyle: GoogleFonts.plusJakartaSans(
+                fontSize: 10,
+                color: Colors.white.withValues(alpha: 0.4),
+              ),
+              filled: true,
+              fillColor: Colors.black.withValues(alpha: 0.35),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppTheme.accent),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: commentProvider.isSubmitting
+                  ? null
+                  : () => _submitComment(weapon),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.accent,
+                foregroundColor: Colors.black,
+                disabledBackgroundColor: AppTheme.accent.withValues(
+                  alpha: 0.35,
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+              ),
+              child: commentProvider.isSubmitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      authProvider.isAuthenticated
+                          ? 'POST COMMENT'
+                          : 'LOGIN TO COMMENT',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildReviewCard(String username, String timeAgo, String content) {
+  Widget _buildCommentStatus(String message, IconData icon) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xff1c2436),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white.withValues(alpha: 0.55), size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11,
+                color: Colors.white.withValues(alpha: 0.7),
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewCard(ProductComment comment) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -733,7 +1098,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                username,
+                comment.userName,
                 style: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
@@ -741,7 +1106,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                 ),
               ),
               Text(
-                timeAgo,
+                _formatTimeAgo(comment.createdAt),
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 11,
                   color: Colors.white.withValues(alpha: 0.4),
@@ -753,10 +1118,12 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
           Row(
             children: List.generate(
               5,
-              (_) => const Padding(
-                padding: EdgeInsets.only(right: 2.0),
+              (index) => Padding(
+                padding: const EdgeInsets.only(right: 2.0),
                 child: Icon(
-                  Icons.star_rounded,
+                  index < comment.rating
+                      ? Icons.star_rounded
+                      : Icons.star_outline_rounded,
                   size: 12,
                   color: AppTheme.accent,
                 ),
@@ -765,7 +1132,7 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            content,
+            comment.content,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 11,
               color: Colors.white.withValues(alpha: 0.85),
@@ -777,13 +1144,34 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
     );
   }
 
+  String _formatTimeAgo(DateTime createdAt) {
+    final difference = DateTime.now().difference(createdAt);
+    if (difference.inDays >= 30) {
+      final months = (difference.inDays / 30).floor();
+      return '${months}mo ago';
+    }
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d ago';
+    }
+    if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    }
+    if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    }
+    return 'Just now';
+  }
+
   @override
   Widget build(BuildContext context) {
     final weaponProvider = Provider.of<WeaponProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
     final wishlistProvider = Provider.of<WishlistProvider>(context);
-    
-    final weaponIndex = weaponProvider.rawWeapons.indexWhere((w) => w.id == widget.weaponId);
+    final commentProvider = Provider.of<CommentProvider>(context);
+
+    final weaponIndex = weaponProvider.rawWeapons.indexWhere(
+      (w) => w.id == widget.weaponId,
+    );
     if (weaponIndex == -1) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator(color: AppTheme.accent)),
@@ -803,19 +1191,31 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             children: [
               // Floating banner header matching Figma card layout
               Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+                padding: const EdgeInsets.only(
+                  top: 8.0,
+                  left: 16.0,
+                  right: 16.0,
+                ),
                 child: Stack(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(24), // Rounded corners on all 4 sides matching Figma card
+                      borderRadius: BorderRadius.circular(
+                        24,
+                      ), // Rounded corners on all 4 sides matching Figma card
                       child: Container(
                         height: 180, // Narrow card aspect ratio matching Figma
                         decoration: BoxDecoration(
                           color: AppTheme.cardBg,
                           image: DecorationImage(
-                            image: (weapon.banner.startsWith('http')
-                                ? NetworkImage(weapon.banner)
-                                : AssetImage(weapon.banner.startsWith('assets/') ? weapon.banner : 'assets/images/${weapon.banner}')) as ImageProvider,
+                            image:
+                                (weapon.banner.startsWith('http')
+                                        ? NetworkImage(weapon.banner)
+                                        : AssetImage(
+                                            weapon.banner.startsWith('assets/')
+                                                ? weapon.banner
+                                                : 'assets/images/${weapon.banner}',
+                                          ))
+                                    as ImageProvider,
                             fit: BoxFit.cover,
                             onError: (err, stack) {},
                           ),
@@ -879,10 +1279,13 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                   ],
                 ),
               ),
-              
+
               // Product info section
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 16.0,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -894,25 +1297,37 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                         borderRadius: BorderRadius.circular(16),
                         color: AppTheme.cardBg,
                         image: DecorationImage(
-                          image: (widget.weaponId.startsWith('w1000001')
-                              ? const AssetImage('assets/Product/Missplitter reforged.png')
-                              : (weapon.image.startsWith('http')
-                                  ? NetworkImage(weapon.image)
-                                  : AssetImage(weapon.image.startsWith('assets/') ? weapon.image : 'assets/images/${weapon.image}'))) as ImageProvider,
+                          image:
+                              (widget.weaponId.startsWith('w1000001')
+                                      ? const AssetImage(
+                                          'assets/Product/Missplitter reforged.png',
+                                        )
+                                      : (weapon.image.startsWith('http')
+                                            ? NetworkImage(weapon.image)
+                                            : AssetImage(
+                                                weapon.image.startsWith(
+                                                      'assets/',
+                                                    )
+                                                    ? weapon.image
+                                                    : 'assets/images/${weapon.image}',
+                                              )))
+                                  as ImageProvider,
                           fit: BoxFit.cover,
                           onError: (err, stack) {},
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    
+
                     // Product Title details
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            weapon.name == 'Mistsplitter Reforged' ? 'Missplitter Reforged' : weapon.name,
+                            weapon.name == 'Mistsplitter Reforged'
+                                ? 'Missplitter Reforged'
+                                : weapon.name,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
@@ -921,7 +1336,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            widget.weaponId.startsWith('w1000001') ? 'The Ultimate last slash' : weapon.description,
+                            widget.weaponId.startsWith('w1000001')
+                                ? 'The Ultimate last slash'
+                                : weapon.description,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.plusJakartaSans(
@@ -932,24 +1349,31 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            isOutOfStock ? 'Out of Stock' : 'In Stock (${weapon.stock} items left)',
+                            isOutOfStock
+                                ? 'Out of Stock'
+                                : 'In Stock (${weapon.stock} items left)',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 11,
                               fontWeight: FontWeight.w900,
-                              color: isOutOfStock ? const Color(0xffFF5252) : const Color(0xff3CDD3C),
+                              color: isOutOfStock
+                                  ? const Color(0xffFF5252)
+                                  : const Color(0xff3CDD3C),
                             ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 12),
-                    
+
                     // Chip, Get Button, and Price tag
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -977,7 +1401,9 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                         ),
                         const SizedBox(height: 8),
                         GetButton(
-                          onTap: isOutOfStock ? null : () => _showPurchaseBottomSheet(context, weapon),
+                          onTap: isOutOfStock
+                              ? null
+                              : () => _showPurchaseBottomSheet(context, weapon),
                           width: 64,
                           height: 28,
                           fontSize: 12,
@@ -1010,15 +1436,15 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
                   ],
                 ),
               ),
-              
+
               // Stats grid block
               _buildStatsRow(weapon),
-              
+
               // Screenshot Gallery row
               _buildGallery(weapon),
-              
+
               // Ratings & Reviews section
-              _buildReviewsSection(weapon),
+              _buildReviewsSection(weapon, commentProvider, authProvider),
             ],
           ),
         ),
@@ -1048,8 +1474,14 @@ class _WeaponDetailScreenState extends State<WeaponDetailScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(authProvider.isAdmin ? Icons.admin_panel_settings_outlined : Icons.search_outlined),
-            activeIcon: Icon(authProvider.isAdmin ? Icons.admin_panel_settings : Icons.search),
+            icon: Icon(
+              authProvider.isAdmin
+                  ? Icons.admin_panel_settings_outlined
+                  : Icons.search_outlined,
+            ),
+            activeIcon: Icon(
+              authProvider.isAdmin ? Icons.admin_panel_settings : Icons.search,
+            ),
             label: authProvider.isAdmin ? 'Admin' : 'Search',
           ),
           const BottomNavigationBarItem(

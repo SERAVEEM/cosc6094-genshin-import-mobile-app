@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes.js';
 import weaponRoutes from './routes/weaponRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import { errorMiddleware } from './middleware/errorMiddleware.js';
+import pool from './config/db.js';
 
 dotenv.config();
 
@@ -24,6 +25,18 @@ app.get('/', (req, res) => {
     status: 'healthy',
     message: 'Genshin Import API is online!'
   });
+});
+
+app.get('/api/health/db', async (req, res, next) => {
+  try {
+    await pool.execute('SELECT 1');
+    res.json({
+      status: 'healthy',
+      database: process.env.DB_NAME || 'genshin_import'
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.use(errorMiddleware);
